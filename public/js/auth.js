@@ -9,14 +9,9 @@ var page = {
   pass: null
 }
 
-page.do = function (dest, onEnter) {
+page.do = function (dest) {
   var user = page.user.value
   var pass = page.pass.value
-
-  // If the form is submitted with Enter button and the form is still empty
-  if (onEnter && !user.length && !pass.length) { return }
-
-  console.log('page.do()\'ing: ' + dest)
 
   if (!user) {
     return swal('Error', 'You need to specify a username', 'error')
@@ -26,7 +21,7 @@ page.do = function (dest, onEnter) {
     return swal('Error', 'You need to specify a username', 'error')
   }
 
-  axios.post(`api/${dest}`, {
+  axios.post('api/' + dest, {
     username: user,
     password: pass
   })
@@ -63,27 +58,11 @@ page.verify = function () {
     })
 }
 
-page.formEnter = function (event) {
-  if (event.keyCode === 13 || event.which === 13) {
-    event.preventDefault()
-    event.stopPropagation()
-    page.do('login', true)
-  }
-}
-
 window.onload = function () {
   page.verify()
 
   page.user = document.getElementById('user')
   page.pass = document.getElementById('pass')
-
-  var form = document.getElementById('authForm')
-  form.addEventListener('keyup', page.formEnter)
-  form.addEventListener('keypress', page.formEnter)
-  form.onsubmit = function (event) {
-    event.preventDefault()
-    event.stopPropagation()
-  }
 
   document.getElementById('loginBtn').addEventListener('click', function () {
     page.do('login')

@@ -610,8 +610,9 @@ uploadsController.processFilesForDisplay = async (req, res, files, existingFiles
 }
 
 uploadsController.delete = async (req, res) => {
+  const id = parseInt(req.body.id)
   req.body.field = 'id'
-  req.body.values = [req.body.id]
+  req.body.values = isNaN(id) ? undefined : [id]
   delete req.body.id
   return uploadsController.bulkDelete(req, res)
 }
@@ -622,8 +623,9 @@ uploadsController.bulkDelete = async (req, res) => {
 
   const field = req.body.field || 'id'
   const values = req.body.values
-  if (values === undefined || !values.length) {
-    return res.json({ success: false, description: 'No files specified.' })
+
+  if (!values || values.constructor.name !== 'Array' || !values.length) {
+    return res.json({ success: false, description: 'No array of files specified.' })
   }
 
   const failed = await utils.bulkDeleteFiles(field, values, user)

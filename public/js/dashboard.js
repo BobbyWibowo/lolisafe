@@ -39,7 +39,7 @@ page.preparePage = function () {
 }
 
 page.verifyToken = function (token, reloadOnError) {
-  axios.post('api/tokens/verify', { token })
+  axios.post('api/tokens/verify', { token: token })
     .then(function (response) {
       if (response.data.success === false) {
         return swal({
@@ -68,6 +68,8 @@ page.verifyToken = function (token, reloadOnError) {
 
 page.prepareDashboard = function () {
   page.dom = document.getElementById('page')
+  page.dom.addEventListener('click', page.domClick, true)
+
   document.getElementById('auth').style.display = 'none'
   document.getElementById('dashboard').style.display = 'block'
 
@@ -105,7 +107,7 @@ page.prepareDashboard = function () {
   logoutBtn.addEventListener('click', function () {
     page.logout()
   })
-  logoutBtn.innerHTML = `Logout ( ${page.username} )`
+  logoutBtn.innerHTML = 'Logout ( ' + page.username + ' )'
 
   page.getAlbumsSidebar()
 }
@@ -113,6 +115,70 @@ page.prepareDashboard = function () {
 page.logout = function () {
   localStorage.removeItem('token')
   location.reload('.')
+}
+
+page.getItemID = function (element) {
+  // This expects the item's parent to have the item's ID
+  var parent = element.parentNode
+  // If the element is part of a set of controls, use the container's parent instead
+  if (element.parentNode.classList.contains('controls')) { parent = parent.parentNode }
+  return parseInt(parent.dataset.id)
+}
+
+page.domClick = function (event) {
+  var element = event.target
+  if (!element) { return }
+
+  // If the clicked element is an icon, delegate event to its A parent; hacky
+  if (element.tagName === 'I' && element.parentNode.tagName === 'SPAN') { element = element.parentNode }
+  if (element.tagName === 'SPAN' && element.parentNode.tagName === 'A') { element = element.parentNode }
+
+  // Skip elements that have no action data
+  if (!element.dataset || !element.dataset.action) { return }
+
+  event.stopPropagation() // maybe necessary
+  var id = page.getItemID(element)
+  var action = element.dataset.action
+
+  switch (action) {
+  case 'page-prev':
+    if (page.currentView.pageNum === 0) {
+      return swal('Can\'t do that!', 'This is already the first page!', 'warning')
+    }
+    return page.getUploads(page.currentView.album, page.currentView.pageNum - 1, element)
+  case 'page-next':
+    return page.getUploads(page.currentView.album, page.currentView.pageNum + 1, element)
+  case 'view-list':
+    return page.setFilesView('list', element)
+  case 'view-thumbs':
+    return page.setFilesView('thumbs', element)
+  case 'clear-selection':
+    return page.clearSelection()
+  case 'add-selected-files-to-album':
+    return page.addSelectedFilesToAlbum()
+  case 'bulk-delete':
+    return page.deleteSelectedFiles()
+  case 'select-file':
+    return page.selectFile(element, event)
+  case 'add-to-album':
+    return page.addSingleFileToAlbum(id)
+  case 'delete-file':
+    return page.deleteFile(id)
+  case 'select-all-files':
+    return page.selectAllFiles(element)
+  case 'display-thumbnail':
+    return page.displayThumbnail(id)
+  case 'delete-file-by-names':
+    return page.deleteFileByNames()
+  case 'submit-album':
+    return page.submitAlbum(element)
+  case 'edit-album':
+    return page.editAlbum(id)
+  case 'delete-album':
+    return page.deleteAlbum(id)
+  case 'get-new-token':
+    return page.getNewToken(element)
+  }
 }
 
 page.isLoading = function (element, state) {
@@ -138,80 +204,73 @@ page.getUploads = function (album, pageNum, element) {
         }
       }
 
+      if (pageNum && (response.data.files.length === 0)) {
+        // Only remove loading class here, since beyond this the entire page will be replaced anyways
+        if (element) { page.isLoading(element, false) }
+        return swal('Can\'t do that!', 'There are no more files!', 'warning')
+      }
+
       page.files = {}
 
-      var prevPage = 0
-      var nextPage = pageNum + 1
+      var pagination =
+        '<nav class="pagination is-centered">\n' +
+        '  <a class="button pagination-previous" data-action="page-prev">Previous</a>\n' +
+        '  <a class="button pagination-next" data-action="page-next">Next page</a>\n' +
+        '</nav>'
 
-      if (response.data.files.length < 25) { nextPage = pageNum }
-
-      if (pageNum > 0) { prevPage = pageNum - 1 }
-
-      var pagination = `
-        <nav class="pagination is-centered">
-          <a class="button pagination-previous" onclick="page.getUploads(${album}, ${prevPage}, this)">Previous</a>
-          <a class="button pagination-next" onclick="page.getUploads(${album}, ${nextPage}, this)">Next page</a>
-        </nav>
-      `
-      var controls = `
-        <div class="columns">
-          <div class="column is-hidden-mobile"></div>
-          <div class="column" style="text-align: center">
-            <a class="button is-small is-danger" title="List view" onclick="page.setFilesView('list', this)">
-              <span class="icon">
-                <i class="icon-th-list"></i>
-              </span>
-            </a>
-            <a class="button is-small is-danger" title="Thumbs view" onclick="page.setFilesView('thumbs', this)">
-              <span class="icon">
-                <i class="icon-th-large"></i>
-              </span>
-            </a>
-          </div>
-          <div class="column" style="text-align: right">
-            <a class="button is-small is-info" title="Clear selection" onclick="page.clearSelection()">
-              <span class="icon">
-                <i class="icon-cancel"></i>
-              </span>
-            </a>
-            <a class="button is-small is-warning" title="Add selected files to album" onclick="page.addSelectedFilesToAlbum()">
-              <span class="icon">
-                <i class="icon-plus"></i>
-              </span>
-            </a>
-            <a class="button is-small is-danger" title="Bulk delete" onclick="page.deleteSelectedFiles()">
-              <span class="icon">
-                <i class="icon-trash"></i>
-              </span>
-              <span>Bulk delete</span>
-            </a>
-          </div>
-        </div>
-      `
+      var controls =
+        '<div class="columns">\n' +
+        '  <div class="column is-hidden-mobile"></div>\n' +
+        '  <div class="column" style="text-align: center">\n' +
+        '    <a class="button is-small is-danger" title="List view" data-action="view-list">\n' +
+        '      <span class="icon">\n' +
+        '        <i class="icon-th-list"></i>\n' +
+        '      </span>\n' +
+        '    </a>\n' +
+        '    <a class="button is-small is-danger" title="Thumbs view" data-action="view-thumbs">\n' +
+        '      <span class="icon">\n' +
+        '        <i class="icon-th-large"></i>\n' +
+        '      </span>\n' +
+        '    </a>\n' +
+        '  </div>\n' +
+        '  <div class="column" style="text-align: right">\n' +
+        '    <a class="button is-small is-info" title="Clear selection" data-action="clear-selection">\n' +
+        '      <span class="icon">\n' +
+        '        <i class="icon-cancel"></i>\n' +
+        '      </span>\n' +
+        '    </a>\n' +
+        '    <a class="button is-small is-warning" title="Add selected files to album" data-action="add-selected-files-to-album">\n' +
+        '      <span class="icon">\n' +
+        '        <i class="icon-plus"></i>\n' +
+        '      </span>\n' +
+        '    </a>\n' +
+        '    <a class="button is-small is-danger" title="Bulk delete" data-action="bulk-delete">\n' +
+        '      <span class="icon">\n' +
+        '        <i class="icon-trash"></i>\n' +
+        '      </span>\n' +
+        '      <span>Bulk delete</span>\n' +
+        '    </a>\n' +
+        '  </div>\n' +
+        '</div>'
 
       var allFilesSelected = true
-      var table
-      var file
-      var selected
-      var displayAlbumOrUser
+      var table, i, file, selected, displayAlbumOrUser
 
       if (page.filesView === 'thumbs') {
-        page.dom.innerHTML = `
-        ${pagination}
-        <hr>
-        ${controls}
-        <div id="table" class="columns is-multiline is-mobile is-centered">
-
-        </div>
-        ${pagination}
-      `
+        page.dom.innerHTML =
+          pagination + '\n' +
+          '<hr>\n' +
+          controls + '\n' +
+          '<div id="table" class="columns is-multiline is-mobile is-centered">\n' +
+          '</div>\n' +
+          pagination
 
         table = document.getElementById('table')
 
-        for (file of response.data.files) {
+        for (i = 0; i < response.data.files.length; i++) {
+          file = response.data.files[i]
           selected = page.selectedFiles.includes(file.id)
           if (!selected && allFilesSelected) { allFilesSelected = false }
-
 
           displayAlbumOrUser = file.album
           if (page.username === 'root') {
@@ -221,35 +280,37 @@ page.getUploads = function (album, pageNum, element) {
 
           var div = document.createElement('div')
           div.className = 'image-container column is-narrow'
+          div.dataset.id = file.id
           if (file.thumb !== undefined) {
-            div.innerHTML = `<a class="image" href="${file.file}" target="_blank" rel="noopener"><img alt="${file.name}" data-src="${file.thumb}"/></a>`
+            div.innerHTML = '<a class="image" href="' + file.file + '" target="_blank" rel="noopener"><img alt="' + file.name + '" data-src="' + file.thumb + '"/></a>'
           } else {
-            div.innerHTML = `<a class="image" href="${file.file}" target="_blank" rel="noopener"><h1 class="title">${file.extname || 'N/A'}</h1></a>`
+            div.innerHTML = '<a class="image" href="' + file.file + '" target="_blank" rel="noopener"><h1 class="title">' + (file.extname || 'N/A') + '</h1></a>'
           }
-          div.innerHTML += `
-          <input type="checkbox" class="file-checkbox" title="Select this file" data-id="${file.id}" onclick="page.selectFile(this, event)"${selected ? ' checked' : ''}>
-          <div class="controls">
-            <a class="button is-small is-info clipboard-js" title="Copy link to clipboard" data-clipboard-text="${file.file}">
-              <span class="icon">
-                <i class="icon-clipboard-1"></i>
-              </span>
-            </a>
-            <a class="button is-small is-warning" title="Add to album" onclick="page.addSingleFileToAlbum(${file.id})">
-              <span class="icon">
-                <i class="icon-plus"></i>
-              </span>
-            </a>
-            <a class="button is-small is-danger" title="Delete file" onclick="page.deleteFile(${file.id})">
-              <span class="icon">
-                <i class="icon-trash"></i>
-              </span>
-            </a>
-          </div>
-          <div class="details">
-            <p><span class="name" title="${file.file}">${file.name}</span></p>
-            <p>${displayAlbumOrUser ? `<span>${displayAlbumOrUser}</span> – ` : ''}${file.size}</p>
-          </div>
-        `
+
+          div.innerHTML +=
+            '<input type="checkbox" class="file-checkbox" title="Select this file" data-action="select-file"' + (selected ? ' checked' : '') + '>\n' +
+            '<div class="controls">\n' +
+            '  <a class="button is-small is-info clipboard-js" title="Copy link to clipboard" data-clipboard-text="' + file.file + '">\n' +
+            '    <span class="icon">\n' +
+            '      <i class="icon-clipboard-1"></i>\n' +
+            '    </span>\n' +
+            '  </a>\n' +
+            '  <a class="button is-small is-warning" title="Add to album" data-action="add-to-album">\n' +
+            '    <span class="icon">\n' +
+            '      <i class="icon-plus"></i>\n' +
+            '    </span>\n' +
+            '  </a>\n' +
+            '  <a class="button is-small is-danger" title="Delete file" data-action="delete-file">\n' +
+            '    <span class="icon">\n' +
+            '      <i class="icon-trash"></i>\n' +
+            '    </span>\n' +
+            '  </a>\n' +
+            '</div>\n' +
+            '<div class="details">\n' +
+            '  <p><span class="name" title="' + file.file + '">' + file.name + '</span></p>\n' +
+            '  <p>' + (displayAlbumOrUser ? ('<span>' + displayAlbumOrUser + '</span> – ') : '') + file.size + '</p>\n' +
+            '</div>'
+
           table.appendChild(div)
           page.checkboxes = Array.from(table.getElementsByClassName('file-checkbox'))
           page.lazyLoad.update()
@@ -258,33 +319,33 @@ page.getUploads = function (album, pageNum, element) {
         var albumOrUser = 'Album'
         if (page.username === 'root') { albumOrUser = 'User' }
 
-        page.dom.innerHTML = `
-        ${pagination}
-        <hr>
-        ${controls}
-        <div class="table-container">
-          <table class="table is-narrow is-fullwidth is-hoverable">
-            <thead>
-              <tr>
-                  <th><input id="selectAll" type="checkbox" title="Select all files" onclick="page.selectAllFiles(this)"></th>
-                  <th style="width: 25%">File</th>
-                  <th>${albumOrUser}</th>
-                  <th>Size</th>
-                  <th>Date</th>
-                  <th></th>
-              </tr>
-            </thead>
-            <tbody id="table">
-            </tbody>
-          </table>
-        </div>
-        <hr>
-        ${pagination}
-      `
+        page.dom.innerHTML =
+          pagination + '\n' +
+          '<hr>\n' +
+          controls + '\n' +
+          '<div class="table-container">\n' +
+          '  <table class="table is-narrow is-fullwidth is-hoverable">\n' +
+          '    <thead>\n' +
+          '      <tr>\n' +
+          '          <th><input id="selectAll" type="checkbox" title="Select all files" data-action="select-all-files"></th>\n' +
+          '          <th style="width: 25%">File</th>\n' +
+          '          <th>' + albumOrUser + '</th>\n' +
+          '          <th>Size</th>\n' +
+          '          <th>Date</th>\n' +
+          '          <th></th>\n' +
+          '      </tr>\n' +
+          '    </thead>\n' +
+          '    <tbody id="table">\n' +
+          '    </tbody>\n' +
+          '  </table>\n' +
+          '</div>\n' +
+          '<hr>\n' +
+          pagination
 
         table = document.getElementById('table')
 
-        for (file of response.data.files) {
+        for (i = 0; i < response.data.files.length; i++) {
+          file = response.data.files[i]
           selected = page.selectedFiles.includes(file.id)
           if (!selected && allFilesSelected) { allFilesSelected = false }
 
@@ -300,37 +361,35 @@ page.getUploads = function (album, pageNum, element) {
           }
 
           var tr = document.createElement('tr')
-          tr.innerHTML = `
-          <tr>
-            <th><input type="checkbox" class="file-checkbox" title="Select this file" data-id="${file.id}" onclick="page.selectFile(this, event)"${selected ? ' checked' : ''}></th>
-            <th><a href="${file.file}" target="_blank" rel="noopener" title="${file.file}">${file.name}</a></th>
-            <th>${displayAlbumOrUser}</th>
-            <td>${file.size}</td>
-            <td>${file.date}</td>
-            <td style="text-align: right">
-              <a class="button is-small is-primary" title="View thumbnail" onclick="page.displayThumbnail(${file.id})"${file.thumb ? '' : ' disabled'}>
-                <span class="icon">
-                  <i class="icon-picture-1"></i>
-                </span>
-              </a>
-              <a class="button is-small is-info clipboard-js" title="Copy link to clipboard" data-clipboard-text="${file.file}">
-                <span class="icon">
-                  <i class="icon-clipboard-1"></i>
-                </span>
-              </a>
-              <a class="button is-small is-warning" title="Add to album" onclick="page.addSingleFileToAlbum(${file.id})">
-                <span class="icon">
-                  <i class="icon-plus"></i>
-                </span>
-              </a>
-              <a class="button is-small is-danger" title="Delete file" onclick="page.deleteFile(${file.id})">
-                <span class="icon">
-                  <i class="icon-trash"></i>
-                </span>
-              </a>
-            </td>
-          </tr>
-        `
+          tr.dataset.id = file.id
+          tr.innerHTML =
+            '<th class="controls"><input type="checkbox" class="file-checkbox" title="Select this file" data-action="select-file"' + (selected ? ' checked' : '') + '></th>\n' +
+            '<th><a href="' + file.file + '" target="_blank" rel="noopener" title="' + file.file + '">' + file.name + '</a></th>\n' +
+            '<th>' + displayAlbumOrUser + '</th>\n' +
+            '<td>' + file.size + '</td>\n' +
+            '<td>' + file.date + '</td>\n' +
+            '<td class="controls" style="text-align: right" >\n' +
+            '  <a class="button is-small is-primary" title="View thumbnail" data-action="display-thumbnail"' + (file.thumb ? '' : ' disabled') + '>\n' +
+            '    <span class="icon">\n' +
+            '      <i class="icon-picture-1"></i>\n' +
+            '    </span>\n' +
+            '  </a>\n' +
+            '  <a class="button is-small is-info clipboard-js" title="Copy link to clipboard" data-clipboard-text="' + file.file + '">\n' +
+            '    <span class="icon">\n' +
+            '      <i class="icon-clipboard-1"></i>\n' +
+            '    </span>\n' +
+            '  </a>\n' +
+            '  <a class="button is-small is-warning" title="Add to album" data-action="add-to-album">\n' +
+            '    <span class="icon">\n' +
+            '      <i class="icon-plus"></i>\n' +
+            '    </span>\n' +
+            '  </a>\n' +
+            '  <a class="button is-small is-danger" title="Delete file" data-action="delete-file">\n' +
+            '    <span class="icon">\n' +
+            '      <i class="icon-trash"></i>\n' +
+            '    </span>\n' +
+            '  </a>\n' +
+            '</td>'
 
           table.appendChild(tr)
           page.checkboxes = Array.from(table.getElementsByClassName('file-checkbox'))
@@ -343,7 +402,7 @@ page.getUploads = function (album, pageNum, element) {
       }
 
       page.currentView.album = album
-      page.currentView.pageNum = pageNum
+      page.currentView.pageNum = response.data.files.length ? pageNum : 0
     })
     .catch(function (error) {
       console.log(error)
@@ -375,7 +434,7 @@ page.selectAllFiles = function (element) {
   var checkboxes = table.getElementsByClassName('file-checkbox')
 
   for (var i = 0; i < checkboxes.length; i++) {
-    var id = parseInt(checkboxes[i].dataset.id)
+    var id = page.getItemID(checkboxes[i])
     if (isNaN(id)) { continue }
     if (checkboxes[i].checked !== element.checked) {
       checkboxes[i].checked = element.checked
@@ -411,7 +470,7 @@ page.selectInBetween = function (element, lastElement) {
     if ((thisIndex > lastIndex && i > lastIndex && i < thisIndex) ||
       (thisIndex < lastIndex && i > thisIndex && i < lastIndex)) {
       page.checkboxes[i].checked = true
-      page.selectedFiles.push(parseInt(page.checkboxes[i].dataset.id))
+      page.selectedFiles.push(page.getItemID(page.checkboxes[i]))
     }
   }
 
@@ -425,8 +484,7 @@ page.selectFile = function (element, event) {
     page.lastSelected = element
   }
 
-  var id = parseInt(element.dataset.id)
-
+  var id = page.getItemID(element)
   if (isNaN(id)) { return }
 
   if (!page.selectedFiles.includes(id) && element.checked) {
@@ -448,10 +506,10 @@ page.clearSelection = function () {
     return swal('An error occurred!', 'You have not selected any files.', 'error')
   }
 
-  var suffix = `file${count === 1 ? '' : 's'}`
+  var suffix = 'file' + (count === 1 ? '' : 's')
   return swal({
     title: 'Are you sure?',
-    text: `You are going to unselect ${count} ${suffix}.`,
+    text: 'You are going to unselect ' + count + ' ' + suffix + '.',
     buttons: true
   })
     .then(function (proceed) {
@@ -472,7 +530,7 @@ page.clearSelection = function () {
       var selectAll = document.getElementById('selectAll')
       if (selectAll) { selectAll.checked = false }
 
-      return swal('Cleared selection!', `Unselected ${count} ${suffix}.`, 'success')
+      return swal('Cleared selection!', 'Unselected ' + count + ' ' + suffix + '.', 'success')
     })
 }
 
@@ -494,7 +552,7 @@ page.deleteFile = function (id) {
     .then(function (proceed) {
       if (!proceed) { return }
 
-      axios.post('api/upload/delete', { id })
+      axios.post('api/upload/delete', { id: id })
         .then(function (response) {
           if (!response) { return }
 
@@ -522,16 +580,16 @@ page.deleteSelectedFiles = function () {
     return swal('An error occurred!', 'You have not selected any files.', 'error')
   }
 
-  var suffix = `file${count === 1 ? '' : 's'}`
+  var suffix = 'file' + (count === 1 ? '' : 's')
   swal({
     title: 'Are you sure?',
-    text: `You won't be able to recover ${count} ${suffix}!`,
+    text: 'You won\'t be able to recover ' + count + ' ' + suffix + '!',
     icon: 'warning',
     dangerMode: true,
     buttons: {
       cancel: true,
       confirm: {
-        text: `Yes, nuke the ${suffix}!`,
+        text: 'Yes, nuke the ' + suffix + '!',
         closeModal: false
       }
     }
@@ -566,7 +624,7 @@ page.deleteSelectedFiles = function () {
 
           localStorage.selectedFiles = JSON.stringify(page.selectedFiles)
 
-          swal('Deleted!', `${deleted} file${deleted === 1 ? ' has' : 's have'} been deleted.`, 'success')
+          swal('Deleted!', deleted + ' file' + (deleted === 1 ? ' has' : 's have') + ' been deleted.', 'success')
           return page.getUploads(page.currentView.album, page.currentView.pageNum)
         })
         .catch(function (error) {
@@ -577,28 +635,25 @@ page.deleteSelectedFiles = function () {
 }
 
 page.deleteByNames = function () {
-  page.dom.innerHTML = `
-    <h2 class="subtitle">Delete by names</h2>
-
-    <div class="field">
-      <label class="label">File names:</label>
-      <div class="control">
-        <textarea id="names" class="textarea"></textarea>
-      </div>
-      <p class="help">Separate each entry with a new line.</p>
-    </div>
-
-    <div class="field">
-      <div class="control">
-        <a class="button is-danger is-fullwidth" onclick="page.deleteFileByNames()">
-          <span class="icon">
-            <i class="icon-trash"></i>
-          </span>
-          <span>Bulk delete</span>
-        </a>
-      </div>
-    </div>
-  `
+  page.dom.innerHTML =
+    '<h2 class="subtitle">Delete by names</h2>\n' +
+    '<div class="field">\n' +
+    '  <label class="label">File names:</label>\n' +
+    '  <div class="control">\n' +
+    '    <textarea id="names" class="textarea"></textarea>\n' +
+    '  </div>\n' +
+    '  <p class="help">Separate each entry with a new line.</p>\n' +
+    '</div>\n' +
+    '<div class="field">\n' +
+    '  <div class="control">\n' +
+    '    <a class="button is-danger is-fullwidth" data-action="delete-file-by-names">\n' +
+    '      <span class="icon">\n' +
+    '        <i class="icon-trash"></i>\n' +
+    '      </span>\n' +
+    '      <span>Bulk delete</span>\n' +
+    '    </a>\n' +
+    '  </div>\n' +
+    '</div>'
 }
 
 page.deleteFileByNames = function () {
@@ -612,16 +667,16 @@ page.deleteFileByNames = function () {
     return swal('An error occurred!', 'You have not entered any file names.', 'error')
   }
 
-  var suffix = `file${count === 1 ? '' : 's'}`
+  var suffix = 'file' + (count === 1 ? '' : 's')
   swal({
     title: 'Are you sure?',
-    text: `You won't be able to recover ${count} ${suffix}!`,
+    text: 'You won\'t be able to recover ' + count + ' ' + suffix + '!',
     icon: 'warning',
     dangerMode: true,
     buttons: {
       cancel: true,
       confirm: {
-        text: `Yes, nuke the ${suffix}!`,
+        text: 'Yes, nuke the ' + suffix + '!',
         closeModal: false
       }
     }
@@ -650,7 +705,7 @@ page.deleteFileByNames = function () {
           }
 
           document.getElementById('names').value = bulkdelete.data.failed.join('\n')
-          swal('Deleted!', `${deleted} file${deleted === 1 ? ' has' : 's have'} been deleted.`, 'success')
+          swal('Deleted!', deleted + ' file' + (deleted === 1 ? ' has' : 's have') + ' been deleted.', 'success')
         })
         .catch(function (error) {
           console.log(error)
@@ -690,7 +745,7 @@ page.addFilesToAlbum = function (ids, callback) {
   var count = ids.length
   return swal({
     title: 'Are you sure?',
-    text: `You are about to move ${count} file${count === 1 ? '' : 's'} to an album.`,
+    text: 'You are about to move ' + count + ' file' + (count === 1 ? '' : 's') + ' to an album.',
     buttons: {
       cancel: true,
       confirm: {
@@ -723,23 +778,22 @@ page.addFilesToAlbum = function (ids, callback) {
 
           var options = list.data.albums
             .map(function (album) {
-              return `<option value="${album.id}">${album.name}</option>`
+              return '<option value="' + album.id + '">' + album.name + '</option>'
             })
             .join('\n')
 
-          page.selectAlbumContainer.innerHTML = `
-            <div class="field">
-              <label class="label">If a file is already in an album, it will be moved.</label>
-              <div class="control">
-                <div class="select is-fullwidth">
-                  <select>
-                    <option value="-1">Remove from album</option>
-                    <option value="" selected disabled>Choose an album</option>
-                    ${options}
-                  </select>
-                </div>
-            </div>
-          `
+          page.selectAlbumContainer.innerHTML =
+            '<div class="field">\n' +
+            '  <label class="label">If a file is already in an album, it will be moved.</label>\n' +
+            '  <div class="control">\n' +
+            '    <div class="select is-fullwidth">\n' +
+            '      <select>\n' +
+            '        <option value="-1">Remove from album</option>\n' +
+            '        <option value="" selected disabled>Choose an album</option>\n' +
+            '        ' + options + '\n' +
+            '      </select>\n' +
+            '    </div>\n' +
+            '</div>'
 
           return swal({
             content: page.selectAlbumContainer,
@@ -759,7 +813,10 @@ page.addFilesToAlbum = function (ids, callback) {
                 return swal('An error occurred!', 'You did not choose an album.', 'error')
               }
 
-              axios.post('api/albums/addfiles', { ids, albumid })
+              axios.post('api/albums/addfiles', {
+                ids: ids,
+                albumid: albumid
+              })
                 .then(function (add) {
                   if (!add) { return }
 
@@ -777,12 +834,12 @@ page.addFilesToAlbum = function (ids, callback) {
                     added -= add.data.failed.length
                   }
 
-                  var suffix = `file${ids.length === 1 ? '' : 's'}`
+                  var suffix = 'file' + (ids.length === 1 ? '' : 's')
                   if (!added) {
-                    return swal('An error occurred!', `Could not add the ${suffix} to the album.`, 'error')
+                    return swal('An error occurred!', 'Could not add the ' + suffix + ' to the album.', 'error')
                   }
 
-                  swal('Woohoo!', `Successfully ${albumid < 0 ? 'removed' : 'added'} ${added} ${suffix} ${albumid < 0 ? 'from' : 'to'} the album.`, 'success')
+                  swal('Woohoo!', 'Successfully ' + (albumid < 0 ? 'removed' : 'added') + ' ' + added + ' ' + suffix + ' ' + (albumid < 0 ? 'from' : 'to') + ' the album.', 'success')
                   return callback(add.data.failed)
                 })
                 .catch(function (error) {
@@ -813,53 +870,48 @@ page.getAlbums = function () {
 
       page.albums = {}
 
-      page.dom.innerHTML = `
-      <h2 class="subtitle">Create new album</h2>
-
-      <div class="field">
-        <div class="control">
-          <input id="albumName" class="input" type="text" placeholder="Name">
-        </div>
-      </div>
-
-      <div class="field">
-        <div class="control">
-          <a id="submitAlbum" class="button is-breeze is-fullwidth" onclick="page.submitAlbum(this)">
-            <span class="icon">
-              <i class="icon-paper-plane-empty"></i>
-            </span>
-            <span>Create</span>
-          </a>
-        </div>
-      </div>
-
-      <hr>
-
-      <h2 class="subtitle">List of albums</h2>
-
-      <div class="table-container">
-        <table class="table is-fullwidth is-hoverable">
-          <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Files</th>
-                <th>Created at</th>
-                <th>Public link</th>
-                <th></th>
-            </tr>
-          </thead>
-          <tbody id="table">
-          </tbody>
-        </table>
-      </div>
-    `
+      page.dom.innerHTML =
+        '<h2 class="subtitle">Create new album</h2>\n' +
+        '<div class="field">\n' +
+        '  <div class="control">\n' +
+        '    <input id="albumName" class="input" type="text" placeholder="Name">\n' +
+        '  </div>\n' +
+        '</div>\n' +
+        '<div class="field">\n' +
+        '  <div class="control">\n' +
+        '    <a id="submitAlbum" class="button is-breeze is-fullwidth" data-action="submit-album">\n' +
+        '      <span class="icon">\n' +
+        '        <i class="icon-paper-plane-empty"></i>\n' +
+        '      </span>\n' +
+        '      <span>Create</span>\n' +
+        '    </a>\n' +
+        '  </div>\n' +
+        '</div>\n' +
+        '<hr>\n' +
+        '<h2 class="subtitle">List of albums</h2>\n' +
+        '<div class="table-container">\n' +
+        '  <table class="table is-fullwidth is-hoverable">\n' +
+        '    <thead>\n' +
+        '      <tr>\n' +
+        '          <th>ID</th>\n' +
+        '          <th>Name</th>\n' +
+        '          <th>Files</th>\n' +
+        '          <th>Created at</th>\n' +
+        '          <th>Public link</th>\n' +
+        '          <th></th>\n' +
+        '      </tr>\n' +
+        '    </thead>\n' +
+        '    <tbody id="table">\n' +
+        '    </tbody>\n' +
+        '  </table>\n' +
+        '</div>'
 
       var homeDomain = response.data.homeDomain
       var table = document.getElementById('table')
 
-      for (var album of response.data.albums) {
-        var albumUrl = `${homeDomain}/a/${album.identifier}`
+      for (var i = 0; i < response.data.albums.length; i++) {
+        var album = response.data.albums[i]
+        var albumUrl = homeDomain + '/a/' + album.identifier
 
         page.albums[album.id] = {
           name: album.name,
@@ -868,37 +920,36 @@ page.getAlbums = function () {
         }
 
         var tr = document.createElement('tr')
-        tr.innerHTML = `
-        <tr>
-          <th>${album.id}</th>
-          <th>${album.name}</th>
-          <th>${album.files}</th>
-          <td>${album.date}</td>
-          <td><a${album.public ? ` href="${albumUrl}"` : ''} target="_blank" rel="noopener">${albumUrl}</a></td>
-          <td style="text-align: right">
-            <a class="button is-small is-primary" title="Edit album" onclick="page.editAlbum(${album.id})">
-              <span class="icon is-small">
-                <i class="icon-pencil-1"></i>
-              </span>
-            </a>
-            <a class="button is-small is-info clipboard-js" title="Copy link to clipboard" ${album.public ? `data-clipboard-text="${albumUrl}"` : 'disabled'}>
-              <span class="icon is-small">
-                <i class="icon-clipboard-1"></i>
-              </span>
-            </a>
-            <a class="button is-small is-warning" title="Download album" ${album.download ? `href="api/album/zip/${album.identifier}?v=${album.editedAt}"` : 'disabled'}>
-              <span class="icon is-small">
-                <i class="icon-download"></i>
-              </span>
-            </a>
-            <a class="button is-small is-danger" title="Delete album" onclick="page.deleteAlbum(${album.id})">
-              <span class="icon is-small">
-                <i class="icon-trash"></i>
-              </span>
-            </a>
-          </td>
-        </tr>
-      `
+        tr.innerHTML =
+          '<tr>\n' +
+          '  <th>' + album.id + '</th>\n' +
+          '  <th>' + album.name + '</th>\n' +
+          '  <th>' + album.files + '</th>\n' +
+          '  <td>' + album.date + '</td>\n' +
+          '  <td><a' + (album.public ? (' href="' + albumUrl + '"') : '') + ' target="_blank" rel="noopener">' + albumUrl + '</a></td>\n' +
+          '  <td style="text-align: right" data-id="' + album.id + '">\n' +
+          '    <a class="button is-small is-primary" title="Edit album" data-action="edit-album">\n' +
+          '      <span class="icon is-small">\n' +
+          '        <i class="icon-pencil-1"></i>\n' +
+          '      </span>\n' +
+          '    </a>\n' +
+          '    <a class="button is-small is-info clipboard-js" title="Copy link to clipboard" ' + (album.public ? ('data-clipboard-text="' + albumUrl + '"') : 'disabled') + '>\n' +
+          '      <span class="icon is-small">\n' +
+          '        <i class="icon-clipboard-1"></i>\n' +
+          '      </span>\n' +
+          '    </a>\n' +
+          '    <a class="button is-small is-warning" title="Download album" ' + (album.download ? ('href="api/album/zip/' + album.identifier + '?v=' + album.editedAt + '"') : 'disabled') + '>\n' +
+          '      <span class="icon is-small">\n' +
+          '        <i class="icon-download"></i>\n' +
+          '      </span>\n' +
+          '    </a>\n' +
+          '    <a class="button is-small is-danger" title="Delete album" data-action="delete-album">\n' +
+          '      <span class="icon is-small">\n' +
+          '        <i class="icon-trash"></i>\n' +
+          '      </span>\n' +
+          '    </a>\n' +
+          '  </td>\n' +
+          '</tr>'
 
         table.appendChild(tr)
       }
@@ -914,38 +965,38 @@ page.editAlbum = function (id) {
   if (!album) { return }
 
   var div = document.createElement('div')
-  div.innerHTML = `
-    <div class="field">
-      <label class="label">Album name</label>
-      <div class="controls">
-        <input id="_name" class="input" type="text" value="${album.name || ''}">
-      </div>
-    </div>
-    <div class="field">
-      <div class="control">
-        <label class="checkbox">
-          <input id="_download" type="checkbox" ${album.download ? 'checked' : ''}>
-          Enable download
-        </label>
-      </div>
-    </div>
-    <div class="field">
-      <div class="control">
-        <label class="checkbox">
-          <input id="_public" type="checkbox" ${album.public ? 'checked' : ''}>
-          Enable public link
-        </label>
-      </div>
-    </div>
-    <div class="field">
-      <div class="control">
-        <label class="checkbox">
-          <input id="_requestLink" type="checkbox">
-          Request new public link
-        </label>
-      </div>
-    </div>
-  `
+  div.innerHTML =
+    '<div class="field">\n' +
+    '  <label class="label">Album name</label>\n' +
+    '  <div class="controls">\n' +
+    '    <input id="_name" class="input" type="text" value="' + (album.name || '') + '">\n' +
+    '  </div>\n' +
+    '</div>\n' +
+    '<div class="field">\n' +
+    '  <div class="control">\n' +
+    '    <label class="checkbox">\n' +
+    '      <input id="_download" type="checkbox" ' + (album.download ? 'checked' : '') + '>\n' +
+    '      Enable download\n' +
+    '    </label>\n' +
+    '  </div>\n' +
+    '</div>\n' +
+    '<div class="field">\n' +
+    '  <div class="control">\n' +
+    '    <label class="checkbox">\n' +
+    '      <input id="_public" type="checkbox" ' + (album.public ? 'checked' : '') + '>\n' +
+    '      Enable public link\n' +
+    '    </label>\n' +
+    '  </div>\n' +
+    '</div>\n' +
+    '<div class="field">\n' +
+    '  <div class="control">\n' +
+    '    <label class="checkbox">\n' +
+    '      <input id="_requestLink" type="checkbox">\n' +
+    '      Request new public link\n' +
+    '    </label>\n' +
+    '  </div>\n' +
+    '</div>'
+
   swal({
     title: 'Edit album',
     icon: 'info',
@@ -961,7 +1012,7 @@ page.editAlbum = function (id) {
       if (!value) { return }
 
       axios.post('api/albums/edit', {
-        id,
+        id: id,
         name: document.getElementById('_name').value,
         download: document.getElementById('_download').checked,
         public: document.getElementById('_public').checked,
@@ -979,9 +1030,9 @@ page.editAlbum = function (id) {
           }
 
           if (response.data.identifier) {
-            swal('Success!', `Your album's new identifier is: ${response.data.identifier}.`, 'success')
+            swal('Success!', 'Your album\'s new identifier is: ' + response.data.identifier + '.', 'success')
           } else if (response.data.name !== album.name) {
-            swal('Success!', `Your album was renamed to: ${response.data.name}.`, 'success')
+            swal('Success!', 'Your album was renamed to: ' + response.data.name + '.', 'success')
           } else {
             swal('Success!', 'Your album was edited!', 'success')
           }
@@ -1018,9 +1069,10 @@ page.deleteAlbum = function (id) {
   })
     .then(function (proceed) {
       if (!proceed) { return }
+      console.log(proceed, proceed === 'purge')
 
       axios.post('api/albums/delete', {
-        id,
+        id: id,
         purge: proceed === 'purge'
       })
         .then(function (response) {
@@ -1091,7 +1143,8 @@ page.getAlbumsSidebar = function () {
 
       if (response.data.albums === undefined) { return }
 
-      for (var album of response.data.albums) {
+      for (var i = 0; i < response.data.albums.length; i++) {
+        var album = response.data.albums[i]
         var li = document.createElement('li')
         var a = document.createElement('a')
         a.id = album.id
@@ -1127,30 +1180,27 @@ page.changeFileLength = function () {
         }
       }
 
-      page.dom.innerHTML = `
-      <h2 class="subtitle">File name length</h2>
-
-      <div class="field">
-        <div class="field">
-          <label class="label">Your current file name length:</label>
-          <div class="control">
-            <input id="fileLength" class="input" type="text" placeholder="Your file length" value="${response.data.fileLength ? Math.min(Math.max(response.data.fileLength, response.data.config.min), response.data.config.max) : response.data.config.default}">
-          </div>
-          <p class="help">Default file name length is <b>${response.data.config.default}</b> characters. ${response.data.config.userChangeable ? `Range allowed for user is <b>${response.data.config.min}</b> to <b>${response.data.config.max}</b> characters.` : 'Changing file name length is disabled at the moment.'}</p>
-        </div>
-
-        <div class="field">
-          <div class="control">
-            <a id="setFileLength" class="button is-breeze is-fullwidth">
-              <span class="icon">
-                <i class="icon-paper-plane-empty"></i>
-              </span>
-              <span>Set file name length</span>
-            </a>
-          </div>
-        <div>
-      </div>
-    `
+      page.dom.innerHTML =
+        '<h2 class="subtitle">File name length</h2>\n' +
+        '<div class="field">\n' +
+        '  <div class="field">\n' +
+        '    <label class="label">Your current file name length:</label>\n' +
+        '    <div class="control">\n' +
+        '      <input id="fileLength" class="input" type="text" placeholder="Your file length" value="' + (response.data.fileLength ? Math.min(Math.max(response.data.fileLength, response.data.config.min), response.data.config.max) : response.data.config.default) + '">\n' +
+        '    </div>\n' +
+        '    <p class="help">Default file name length is <b>' + response.data.config.default + '</b> characters. ' + (response.data.config.userChangeable ? ('Range allowed for user is <b>' + response.data.config.min + '</b> to <b>' + response.data.config.max + '</b> characters.') : 'Changing file name length is disabled at the moment.') + '</p>\n' +
+        '  </div>\n' +
+        '  <div class="field">\n' +
+        '    <div class="control">\n' +
+        '      <a id="setFileLength" class="button is-breeze is-fullwidth">\n' +
+        '        <span class="icon">\n' +
+        '          <i class="icon-paper-plane-empty"></i>\n' +
+        '        </span>\n' +
+        '        <span>Set file name length</span>\n' +
+        '      </a>\n' +
+        '    </div>\n' +
+        '  <div>\n' +
+        '</div>'
 
       document.getElementById('setFileLength').addEventListener('click', function () {
         page.setFileLength(document.getElementById('fileLength').value, this)
@@ -1165,7 +1215,7 @@ page.changeFileLength = function () {
 page.setFileLength = function (fileLength, element) {
   page.isLoading(element, true)
 
-  axios.post('api/filelength/change', { fileLength })
+  axios.post('api/filelength/change', { fileLength: fileLength })
     .then(function (response) {
       page.isLoading(element, false)
 
@@ -1205,29 +1255,27 @@ page.changeToken = function () {
         }
       }
 
-      page.dom.innerHTML = `
-      <h2 class="subtitle">Manage your token</h2>
+      page.dom.innerHTML =
+        '<h2 class="subtitle">Manage your token</h2>\n' +
+        '<div class="field">\n' +
+        '  <label class="label">Your current token:</label>\n' +
+        '  <div class="field">\n' +
+        '    <div class="control">\n' +
+        '      <input id="token" readonly class="input" type="text" placeholder="Your token" value="' + response.data.token + '">\n' +
+        '    </div>\n' +
+        '  </div>\n' +
+        '</div>\n' +
+        '<div class="field">\n' +
+        '  <div class="control">\n' +
+        '    <a id="getNewToken" class="button is-breeze is-fullwidth" data-action="get-new-token">\n' +
+        '      <span class="icon">\n' +
+        '        <i class="icon-arrows-cw"></i>\n' +
+        '      </span>\n' +
+        '      <span>Request new token</span>\n' +
+        '    </a>\n' +
+        '  </div>\n' +
+        '</div>'
 
-      <div class="field">
-        <label class="label">Your current token:</label>
-        <div class="field">
-          <div class="control">
-            <input id="token" readonly class="input" type="text" placeholder="Your token" value="${response.data.token}">
-          </div>
-        </div>
-      </div>
-
-      <div class="field">
-        <div class="control">
-          <a id="getNewToken" class="button is-breeze is-fullwidth" onclick="page.getNewToken(this)">
-            <span class="icon">
-              <i class="icon-arrows-cw"></i>
-            </span>
-            <span>Request new token</span>
-          </a>
-        </div>
-      </div>
-    `
     })
     .catch(function (error) {
       console.log(error)
@@ -1270,34 +1318,30 @@ page.getNewToken = function (element) {
 }
 
 page.changePassword = function () {
-  page.dom.innerHTML = `
-    <h2 class="subtitle">Change your password</h2>
-
-    <div class="field">
-      <label class="label">New password:</label>
-      <div class="control">
-        <input id="password" class="input" type="password">
-      </div>
-    </div>
-
-    <div class="field">
-      <label class="label">Re-type new password:</label>
-      <div class="control">
-        <input id="passwordConfirm" class="input" type="password">
-      </div>
-    </div>
-
-    <div class="field">
-      <div class="control">
-        <a id="sendChangePassword" class="button is-breeze is-fullwidth">
-          <span class="icon">
-            <i class="icon-paper-plane-empty"></i>
-          </span>
-          <span>Set new password</span>
-        </a>
-      </div>
-    </div>
-  `
+  page.dom.innerHTML =
+    '<h2 class="subtitle">Change your password</h2>\n' +
+    '<div class="field">\n' +
+    '  <label class="label">New password:</label>\n' +
+    '  <div class="control">\n' +
+    '    <input id="password" class="input" type="password">\n' +
+    '  </div>\n' +
+    '</div>\n' +
+    '<div class="field">\n' +
+    '  <label class="label">Re-type new password:</label>\n' +
+    '  <div class="control">\n' +
+    '    <input id="passwordConfirm" class="input" type="password">\n' +
+    '  </div>\n' +
+    '</div>\n' +
+    '<div class="field">\n' +
+    '  <div class="control">\n' +
+    '    <a id="sendChangePassword" class="button is-breeze is-fullwidth">\n' +
+    '      <span class="icon">\n' +
+    '        <i class="icon-paper-plane-empty"></i>\n' +
+    '      </span>\n' +
+    '      <span>Set new password</span>\n' +
+    '    </a>\n' +
+    '  </div>\n' +
+    '</div>'
 
   document.getElementById('sendChangePassword').addEventListener('click', function () {
     if (document.getElementById('password').value === document.getElementById('passwordConfirm').value) {

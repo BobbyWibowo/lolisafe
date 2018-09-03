@@ -64,7 +64,7 @@ page.preparePage = function () {
 page.verifyToken = function (token, reloadOnError) {
   if (reloadOnError === undefined) { reloadOnError = false }
 
-  axios.post('api/tokens/verify', { token })
+  axios.post('api/tokens/verify', { token: token })
     .then(function (response) {
       if (response.data.success === false) {
         return swal({
@@ -104,7 +104,7 @@ page.prepareUpload = function () {
     document.getElementById('albumDiv').style.display = 'flex'
   }
 
-  document.getElementById('maxFileSize').innerHTML = `Maximum upload size per file is ${page.maxFileSize}`
+  document.getElementById('maxFileSize').innerHTML = 'Maximum upload size per file is ' + page.maxFileSize
   document.getElementById('loginToUpload').style.display = 'none'
 
   if (!page.token && page.enableUserAccounts) {
@@ -154,7 +154,8 @@ page.prepareAlbums = function () {
       if (!response.data.albums.length) { return }
 
       // Loop through the albums and create an option for each album
-      for (var album of response.data.albums) {
+      for (var i = 0; i < response.data.albums.length; i++) {
+        var album = response.data.albums[i]
         var option = document.createElement('option')
         option.value = album.id
         option.innerHTML = album.name
@@ -185,14 +186,14 @@ page.prepareDropzone = function () {
   var tabDiv = document.getElementById('tab-files')
   var div = document.createElement('div')
   div.className = 'control is-expanded'
-  div.innerHTML = `
-    <div id="dropzone" class="button is-danger is-fullwidth is-unselectable">
-      <span class="icon">
-        <i class="icon-upload-cloud"></i>
-      </span>
-      <span>Click here or drag and drop files</span>
-    </div>
-  `
+  div.innerHTML =
+    '<div id="dropzone" class="button is-danger is-fullwidth is-unselectable">\n' +
+    '  <span class="icon">\n' +
+    '    <i class="icon-upload-cloud"></i>\n' +
+    '  </span>\n' +
+    '  <span>Click here or drag and drop files</span>\n' +
+    '</div>'
+
   tabDiv.getElementsByClassName('dz-container')[0].appendChild(div)
 
   var previewsContainer = tabDiv.getElementsByClassName('uploads')[0]
@@ -202,7 +203,7 @@ page.prepareDropzone = function () {
     maxFilesize: parseInt(page.maxFileSize),
     parallelUploads: 2,
     uploadMultiple: false,
-    previewsContainer,
+    previewsContainer: previewsContainer,
     previewTemplate: page.previewTemplate,
     createImageThumbnails: false,
     maxFiles: 1000,
@@ -268,7 +269,7 @@ page.prepareDropzone = function () {
   page.dropzone.on('uploadprogress', function (file, progress) {
     if (file.upload.chunked && progress === 100) { return }
     file.previewElement.querySelector('.progress').setAttribute('value', progress)
-    file.previewElement.querySelector('.progress').innerHTML = `${progress}%`
+    file.previewElement.querySelector('.progress').innerHTML = progress + '%'
   })
 
   page.dropzone.on('success', function (file, response) {
@@ -326,7 +327,10 @@ page.uploadUrls = function (button) {
       var previewElement = previewTemplate.content.firstChild
       previewElement.querySelector('.name').innerHTML = url
       previewsContainer.appendChild(previewElement)
-      return { url, previewElement }
+      return {
+        url: url,
+        previewElement: previewElement
+      }
     })
 
     function post(i) {
@@ -351,7 +355,7 @@ page.uploadUrls = function (button) {
         {
           headers: {
             token: page.token,
-            albumid
+            albumid: albumid
           }
         })
         .then(function (response) {
@@ -392,13 +396,13 @@ page.prepareShareX = function () {
     var sharexElement = document.getElementById('ShareX')
     var sharexFile =
       '{\r\n' +
-      `  "Name": "${location.hostname}",\r\n` +
+      '  "Name": "' + location.hostname + '",\r\n' +
       '  "DestinationType": "ImageUploader, FileUploader",\r\n' +
       '  "RequestType": "POST",\r\n' +
-      `  "RequestURL": "${location.origin}/api/upload",\r\n` +
+      '  "RequestURL": "' + location.origin + '/api/upload",\r\n' +
       '  "FileFormName": "files[]",\r\n' +
       '  "Headers": {\r\n' +
-      `    "token": "${page.token}"\r\n` +
+      '    "token": "' + page.token + '"\r\n' +
       '  },\r\n' +
       '  "ResponseType": "Text",\r\n' +
       '  "URL": "$json:files[0].url$",\r\n' +
@@ -406,36 +410,36 @@ page.prepareShareX = function () {
       '}'
     var sharexBlob = new Blob([sharexFile], { type: 'application/octet-binary' })
     sharexElement.setAttribute('href', URL.createObjectURL(sharexBlob))
-    sharexElement.setAttribute('download', `${location.hostname}.sxcu`)
+    sharexElement.setAttribute('download', location.hostname + '.sxcu')
   }
 }
 
 page.createAlbum = function () {
   var div = document.createElement('div')
-  div.innerHTML = `
-    <div class="field">
-      <label class="label">Album name</label>
-      <div class="controls">
-        <input id="_name" class="input" type="text" placeholder="My super album">
-      </div>
-    </div>
-    <div class="field">
-      <div class="control">
-        <label class="checkbox">
-          <input id="_download" type="checkbox" checked>
-          Enable download
-        </label>
-      </div>
-    </div>
-    <div class="field">
-      <div class="control">
-        <label class="checkbox">
-          <input id="_public" type="checkbox" checked>
-          Enable public link
-        </label>
-      </div>
-    </div>
-  `
+  div.innerHTML =
+    '<div class="field">\n' +
+    '  <label class="label">Album name</label>\n' +
+    '  <div class="controls">\n' +
+    '    <input id="_name" class="input" type="text" placeholder="My super album">\n' +
+    '  </div>\n' +
+    '</div>\n' +
+    '<div class="field">\n' +
+    '  <div class="control">\n' +
+    '    <label class="checkbox">\n' +
+    '      <input id="_download" type="checkbox" checked>\n' +
+    '      Enable download\n' +
+    '    </label>\n' +
+    '  </div>\n' +
+    '</div>\n' +
+    '<div class="field">\n' +
+    '  <div class="control">\n' +
+    '    <label class="checkbox">\n' +
+    '      <input id="_public" type="checkbox" checked>\n' +
+    '      Enable public link\n' +
+    '    </label>\n' +
+    '  </div>\n' +
+    '</div>'
+
   swal({
     title: 'Create new album',
     icon: 'info',
@@ -452,7 +456,7 @@ page.createAlbum = function () {
 
       var name = document.getElementById('_name').value
       axios.post('api/albums', {
-        name,
+        name: name,
         download: document.getElementById('_download').checked,
         public: document.getElementById('_public').checked
       }, { headers: { token: page.token } })
@@ -483,7 +487,7 @@ window.addEventListener('paste', function (event) {
     var item = items[index]
     if (item.kind === 'file') {
       var blob = item.getAsFile()
-      var file = new File([blob], `pasted-image.${blob.type.match(/(?:[^/]*\/)([^;]*)/)[1]}`)
+      var file = new File([blob], 'pasted-image.' + blob.type.match(/(?:[^/]*\/)([^;]*)/)[1])
       file.type = blob.type
       page.dropzone.addFile(file)
     }
