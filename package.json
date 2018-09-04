@@ -22,7 +22,7 @@
   "dependencies": {
     "bcrypt": "^2.0.0",
     "body-parser": "^1.18.2",
-    "clam-engine": "^2.0.1",
+    "clamdjs": "^1.0.1",
     "express": "^4.16.3",
     "express-rate-limit": "^2.11.0",
     "fluent-ffmpeg": "^2.1.2",

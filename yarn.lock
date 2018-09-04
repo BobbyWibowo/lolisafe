@@ -360,11 +360,9 @@ circular-json@^0.3.1:
   version "0.3.3"
   resolved "https://registry.yarnpkg.com/circular-json/-/circular-json-0.3.3.tgz#815c99ea84f6809529d2f45791bdf82711352d66"
 
-clam-engine@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/clam-engine/-/clam-engine-2.0.1.tgz#ad94dfa8e1d966d13e200dfd5d794f15425bccc5"
-  dependencies:
-    nan "^2.1.0"
+clamdjs@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/clamdjs/-/clamdjs-1.0.1.tgz#335740395680217cde1327f90ae000feabab62e6"
 
 class-utils@^0.3.5:
   version "0.3.6"
@@ -1763,10 +1761,6 @@ mute-stream@0.0.7:
 nan@2.10.0, nan@^2.9.2:
   version "2.10.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.10.0.tgz#96d0cd610ebd58d4b4de9cc0c6828cda99c7548f"
-
-nan@^2.1.0:
-  version "2.11.0"
-  resolved "https://registry.yarnpkg.com/nan/-/nan-2.11.0.tgz#574e360e4d954ab16966ec102c0c049fd961a099"
 
 nan@~2.9.2:
   version "2.9.2"

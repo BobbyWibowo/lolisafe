@@ -530,7 +530,7 @@ uploadsController.formatInfoMap = (req, res, user, infoMap) => {
 uploadsController.scanFiles = async (req, infoMap) => {
   const dirty = await new Promise(async resolve => {
     let iteration = 0
-    const engine = req.app.get('clam-engine')
+    const scanner = req.app.get('clam-scanner')
     const dirty = []
 
     for (const info of infoMap) {
@@ -538,13 +538,10 @@ uploadsController.scanFiles = async (req, infoMap) => {
         console.log(`ClamAV: ${info.data.filename}: ${message}.`)
       }
 
-      engine.scanFile(info.path, (error, virus) => {
-        if (error || virus) {
-          if (error) { log(error.toString()) }
-          if (virus) { log(`${virus} detected`) }
+      scanner.scanFile(info.path).then(reply => {
+        if (!reply.includes('OK') || reply.includes('FOUND')) {
+          log(reply.replace(/^stream: /, ''))
           dirty.push(info)
-        } else {
-          // log('OK')
         }
 
         iteration++

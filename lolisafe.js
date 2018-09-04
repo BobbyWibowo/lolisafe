@@ -4,6 +4,7 @@ const album = require('./routes/album')
 const nojs = require('./routes/nojs')
 const express = require('express')
 const bodyParser = require('body-parser')
+const clamd = require('clamdjs')
 const db = require('knex')(config.database)
 const fs = require('fs')
 const helmet = require('helmet')
@@ -85,34 +86,30 @@ safe.use((error, req, res, next) => {
 })
 
 process.on('uncaughtException', error => {
-  console.error('Uncaught Exception:')
-  console.error(error)
+  console.error('Uncaught Exception:', error)
 })
 
 process.on('unhandledRejection', error => {
-  console.error('Unhandled Rejection (Promise):')
-  console.error(error)
+  console.error('Unhandled Rejection (Promise):', error)
 })
 
-async function start () {
-  if (config.uploads.scan) {
-    // Placing require() here so the package does not have to exist when the option is not enabled
-    const clam = require('clam-engine')
-    const created = await new Promise(resolve => {
-      process.stdout.write('Creating clam-engine...')
-      clam.createEngine(function (error, engine) {
-        if (error) {
-          process.stdout.write(' ERROR\n')
-          console.error(error)
-          return resolve(false)
-        }
-        safe.set('clam-engine', engine)
-        process.stdout.write(' OK\n')
-        console.log(`ClamAV ${engine.version} (${engine.signatures} sigs)`)
-        resolve(true)
-      })
-    })
-    if (!created) { return }
+const start = async () => {
+  if (config.uploads.scan && config.uploads.scan.enabled) {
+    const created = await new Promise(async (resolve, reject) => {
+      if (!config.uploads.scan.ip || !config.uploads.scan.port) {
+        return reject(new Error('Clamd IP or Port is missing'))
+      }
+      const ping = await clamd.ping(config.uploads.scan.ip, config.uploads.scan.port).catch(reject)
+      if (!ping) {
+        return reject(new Error('Could not ping clamd'))
+      }
+      const version = await clamd.version(config.uploads.scan.ip, config.uploads.scan.port).catch(reject)
+      console.log(`${config.uploads.scan.ip}:${config.uploads.scan.port}  ${version}`)
+      const scanner = clamd.createScanner(config.uploads.scan.ip, config.uploads.scan.port)
+      safe.set('clam-scanner', scanner)
+      return resolve(true)
+    }).catch(error => console.error(error.toString()))
+    if (!created) { return process.exit(1) }
   }
 
   safe.listen(config.port, () => console.log(`lolisafe started on port ${config.port}`))
