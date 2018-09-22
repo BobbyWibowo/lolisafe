@@ -103,7 +103,7 @@ Here is a tutorial [on how to do this with nginx](https://www.digitalocean.com/c
 - [discordjs.moe](https://discordjs.moe): A まじ卍 as fuck copy of lolisafe.moe
 - [i.liich.me](https://i.liich.me): Another private clone with a different look.
 - [discordimages.com](https://discordimages.com): A file hosting service that is available for public use.
-- [upload.uwu.ninja](https://upload.uwu.ninja): UwU'ish your uploads with us, now. plz. 
+- [uwu.ninja](https://uwu.ninja): UwU'ish your uploads with us, now. plz. 
 - Feel free to add yours here.
 
 ## Author
