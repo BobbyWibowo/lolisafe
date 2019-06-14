@@ -27,7 +27,7 @@
     "body-parser": "^1.19.0",
     "clamdjs": "^1.0.2",
     "express": "^4.17.1",
-    "express-rate-limit": "^4.0.4",
+    "express-rate-limit": "^5.0.0",
     "fluent-ffmpeg": "^2.1.2",
     "helmet": "^3.18.0",
     "jszip": "^3.2.1",
