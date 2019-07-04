@@ -1970,10 +1970,10 @@ kind-of@^6.0.0, kind-of@^6.0.2:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.2.tgz#01146b36a6218e64e58f3a8d66de5d7fc6f6d051"
   integrity sha512-s5kLOcnH0XqDO+FvuaLX8DDjZ18CGFk7VygH40QoKPUQhW4e2rvM0rwUq0t8IQDOwYSeLK01U90OjzBTme2QqA==
 
-knex@^0.18.1:
-  version "0.18.2"
-  resolved "https://registry.yarnpkg.com/knex/-/knex-0.18.2.tgz#9f9c0643e3e5cc10d88912439fdfceacd913e1d3"
-  integrity sha512-vssQheL3jBjMFuBMriNJzQ7htFwzKRzBn53yce64CcUSw5buFBHakOJN1lNH2CFExuN/rC0yz3HKNvMRZU4bZg==
+knex@^0.18.3:
+  version "0.18.3"
+  resolved "https://registry.yarnpkg.com/knex/-/knex-0.18.3.tgz#d6e0ed263c9f29ca31721f446364e91252543f72"
+  integrity sha512-+UGXPW/FFSOtPSB1KrWslmFntwiSUuMGp5BkheO6pT3cGaLQSJ9wLKYgqOPkyUIK9xDkKraj+OfPXCkQHwldLw==
   dependencies:
     bluebird "^3.5.5"
     colorette "1.0.8"
