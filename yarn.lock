@@ -6840,10 +6840,10 @@ svgo@^1.0.0:
     unquote "~1.1.1"
     util.promisify "~1.0.0"
 
-systeminformation@^4.14.12:
-  version "4.14.12"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.14.12.tgz#e63d7e2cd6c3117bbd6c9e4c3b9e667ef267b65d"
-  integrity sha512-KmHOx72a36qETESEH+LTUVGL4e31+jeZqSd1Th1EkNpjrWohBKGNVYEA9ygo0nccqF+6mi0wuDmKh+Un+dKOmg==
+systeminformation@^4.14.13:
+  version "4.14.13"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.14.13.tgz#2ed7fc824ff5d4c5b4e5576a99c173e3e074862b"
+  integrity sha512-d6f3OBhIvr/ptHoyeGXKOOKzcq8lweSWVpP4ups44J7vR0euomkZ0/otU1/v8y6weJ2HMl5GMzESjcOI5uwz2Q==
 
 table@^5.2.3:
   version "5.4.6"
