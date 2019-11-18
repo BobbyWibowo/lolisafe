@@ -29,7 +29,7 @@
     "full-upgrade": "rm yarn.lock; yarn install"
   },
   "dependencies": {
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^3.0.7",
     "body-parser": "^1.19.0",
     "clamdjs": "^1.0.2",
     "express": "^4.17.1",
