@@ -44,7 +44,7 @@
     "randomstring": "^1.1.5",
     "readline": "^1.3.0",
     "sharp": "^0.23.3",
-    "sqlite3": "^4.1.0",
+    "sqlite3": "^4.1.1",
     "systeminformation": "^4.16.0"
   },
   "devDependencies": {
