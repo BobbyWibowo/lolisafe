@@ -63,7 +63,7 @@
     "gulp-cli": "^2.2.0",
     "gulp-eslint": "^6.0.0",
     "gulp-if": "^3.0.0",
-    "gulp-nodemon": "^2.4.2",
+    "gulp-nodemon": "^2.5.0",
     "gulp-postcss": "^8.0.0",
     "gulp-replace": "^1.0.0",
     "gulp-sourcemaps": "^2.6.5",
