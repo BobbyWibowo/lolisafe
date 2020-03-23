@@ -48,7 +48,7 @@
     "systeminformation": "^4.23.0"
   },
   "devDependencies": {
-    "browserslist": "^4.9.1",
+    "browserslist": "^4.11.0",
     "cssnano": "^4.1.10",
     "del": "^5.1.0",
     "eslint": "^6.8.0",
