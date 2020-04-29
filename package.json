@@ -33,7 +33,7 @@
     "body-parser": "^1.19.0",
     "clamdjs": "^1.0.2",
     "express": "^4.17.1",
-    "express-rate-limit": "^5.1.1",
+    "express-rate-limit": "^5.1.3",
     "fluent-ffmpeg": "^2.1.2",
     "helmet": "^3.22.0",
     "jszip": "^3.4.0",
