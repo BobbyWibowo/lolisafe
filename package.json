@@ -46,7 +46,7 @@
     "search-query-parser": "^1.5.5",
     "sharp": "^0.25.2",
     "sqlite3": "^4.2.0",
-    "systeminformation": "^4.23.9"
+    "systeminformation": "^4.24.1"
   },
   "devDependencies": {
     "browserslist": "^4.12.0",
