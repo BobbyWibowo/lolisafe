@@ -4515,7 +4515,7 @@ node-fetch@^2.6.0:
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.0.tgz#e633456386d4aa55863f676a7ab0daa8fdecb0fd"
   integrity sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
 
-node-pre-gyp@*, node-pre-gyp@0.14.0:
+node-pre-gyp@0.14.0:
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.14.0.tgz#9a0596533b877289bcad4e143982ca3d904ddc83"
   integrity sha512-+CvDC7ZttU/sSt9rFjix/P05iS43qHCOOGzcr3Ry99bXG7VX953+vFyEuph/tfqoYu8dttBkE86JSKBO2OzcxA==
@@ -6959,10 +6959,10 @@ svgo@^1.0.0:
     unquote "~1.1.1"
     util.promisify "~1.0.0"
 
-systeminformation@^4.23.9:
-  version "4.23.9"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.23.9.tgz#3dcacbdcb874933c9ff5e39deff157f449cf1583"
-  integrity sha512-GdBWl5kSbFVFbd56TqwoUX6HMsq9OgkC8D/Ght8o4LyEPYSQv+jWMlvvCVbTJE3RUk5tFgV6LIy9aiXyOg5cFA==
+systeminformation@^4.26.0:
+  version "4.26.0"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.26.0.tgz#02ebf1fcb6e0bcb2f1e1a3f6a1ad64f4ce37b999"
+  integrity sha512-1VtMfcmEda62IlkHIOH22am3IT9MFcBkBisNQh2+CzX3gDie1REZB1U5705ZCKekqRueYBQvsCV9bGpP/3unfw==
 
 table@^5.2.3, table@^5.4.6:
   version "5.4.6"
