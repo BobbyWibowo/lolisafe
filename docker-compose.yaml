@@ -28,10 +28,10 @@ services:
       - net
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.xml.rule=Host(`${DOMAIN}`)'
-      - 'traefik.http.routers.xml.entrypoints=https'
-      - 'traefik.http.routers.xml.tls=true'
-      - 'traefik.http.routers.xml.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.safe.rule=Host(`${DOMAIN}`)'
+      - 'traefik.http.routers.safe.entrypoints=https'
+      - 'traefik.http.routers.safe.tls=true'
+      - 'traefik.http.routers.safe.tls.certresolver=letsencrypt'
 
   traefik:
     image: traefik:latest
