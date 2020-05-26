@@ -24,9 +24,11 @@ module.exports = {
 
     Both cases require you to type the domain where the files will be served on the `domain` key below.
     Which one you use is ultimately up to you.
+
+    Leave this as "false" if using docker.
   */
   serveFilesWithNode: false,
-  domain: 'https://lolisafe.moe',
+  domain: 'https://xml.bz',
 
   /*
     If you are serving your files with a different domain than your lolisafe homepage,
@@ -36,7 +38,7 @@ module.exports = {
   homeDomain: null,
 
   /*
-    Port on which to run the server.
+    Port on which to run the server. Do not change this if using docker. Change in .env.
   */
   port: 9999,
 

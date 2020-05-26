@@ -1,0 +1,63 @@
+version: '3.8'
+
+networks:
+  net:
+    driver: bridge
+
+services:
+  safe:
+    image: lolisafe/lolisafe
+    volumes:
+      - ./config.js:/usr/src/lolisafe/config.js:ro
+      - ./uploads:/usr/src/lolisafe/uploads
+    restart: unless-stopped
+    networks:
+      - net
+
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx.docker.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./uploads:/uploads
+    expose:
+      - 80
+    restart: unless-stopped
+    depends_on:
+      - safe
+    networks:
+      - net
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.xml.rule=Host(`${DOMAIN}`)'
+      - 'traefik.http.routers.xml.entrypoints=https'
+      - 'traefik.http.routers.xml.tls=true'
+      - 'traefik.http.routers.xml.tls.certresolver=letsencrypt'
+
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    volumes:
+      - ./traefik/acme.json:/acme.json
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - net
+    ports:
+      - 80:80
+      - 443:443
+    command:
+      - '--log.level=INFO'
+      - '--providers.docker=true'
+      - '--providers.docker.exposedByDefault=false'
+      - '--entrypoints.http=true'
+      - '--entrypoints.http.address=:80'
+      - '--certificatesresolvers.letsencrypt.acme.email=${EMAIL}'
+      - '--certificatesresolvers.letsencrypt.acme.storage=acme.json'
+      - '--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=http'
+      - '--entrypoints.http.http.redirections.entrypoint.to=https'
+      - '--entrypoints.http.http.redirections.entrypoint.scheme=https'
+      - '--entrypoints.https=true'
+      - '--entrypoints.https.address=:443'
+    restart: unless-stopped
+    depends_on:
+      - nginx
+
