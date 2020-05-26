@@ -28,7 +28,7 @@ module.exports = {
     Leave this as "false" if using docker.
   */
   serveFilesWithNode: false,
-  domain: 'https://xml.bz',
+  domain: 'https://lolisafe.moe',
 
   /*
     If you are serving your files with a different domain than your lolisafe homepage,
