@@ -12,6 +12,8 @@ RUN apk add --no-cache --virtual build-dependencies python make g++
 
 RUN apk add --no-cache ffmpeg
 
+ADD config.sample.js config.js
+
 RUN yarn install
 
 RUN apk update
