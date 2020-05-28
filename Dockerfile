@@ -1,8 +1,8 @@
 FROM node:lts-alpine
 
-LABEL name "lolisafe"
+LABEL name "lolisafe-bobbywibowo"
 LABEL version "3.0.0"
-LABEL maintainer "iCrawl <icrawltogo@gmail.com>"
+LABEL maintainer "evanmn <docker@evan.mn>"
 
 WORKDIR /usr/src/lolisafe
 
