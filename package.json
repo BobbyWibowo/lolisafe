@@ -50,7 +50,7 @@
     "search-query-parser": "^1.5.5",
     "sharp": "^0.25.3",
     "sqlite3": "^4.2.0",
-    "systeminformation": "^4.26.5"
+    "systeminformation": "^4.26.6"
   },
   "devDependencies": {
     "browserslist": "^4.12.0",
