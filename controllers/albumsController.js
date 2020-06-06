@@ -4,6 +4,7 @@ const path = require('path')
 const randomstring = require('randomstring')
 const Zip = require('jszip')
 const paths = require('./pathsController')
+const perms = require('./permissionController')
 const utils = require('./utilsController')
 const config = require('./../config')
 const logger = require('./../logger')
@@ -76,39 +77,102 @@ self.list = async (req, res, next) => {
   const user = await utils.authorize(req, res)
   if (!user) return
 
-  let fields = ['id', 'name']
-  if (req.params.sidebar === undefined)
-    fields = fields.concat(['timestamp', 'identifier', 'editedAt', 'download', 'public', 'description'])
+  const all = req.headers.all === '1'
+  const sidebar = req.headers.sidebar
+  const ismoderator = perms.is(user, 'moderator')
+  if (all && !ismoderator)
+    return res.status(403).end()
 
-  const albums = await db.table('albums')
-    .select(fields)
-    .where({
-      enabled: 1,
-      userid: user.id
-    })
-
-  if (req.params.sidebar !== undefined)
-    return res.json({ success: true, albums })
-
-  const albumids = {}
-  for (const album of albums) {
-    album.download = album.download !== 0
-    album.public = album.public !== 0
-    album.files = 0
-    // Map by IDs
-    albumids[album.id] = album
+  const filter = function () {
+    if (!all)
+      this.where({
+        enabled: 1,
+        userid: user.id
+      })
   }
 
-  const files = await db.table('files')
-    .whereIn('albumid', Object.keys(albumids))
-    .select('albumid')
+  try {
+    // Query albums count for pagination
+    const count = await db.table('albums')
+      .where(filter)
+      .count('id as count')
+      .then(rows => rows[0].count)
+    if (!count)
+      return res.json({ success: true, albums: [], count })
 
-  // Increment files count
-  for (const file of files)
-    if (albumids[file.albumid])
-      albumids[file.albumid].files++
+    let fields = ['id', 'name']
 
-  return res.json({ success: true, albums, homeDomain })
+    let albums
+    if (sidebar) {
+      albums = await db.table('albums')
+        .where(filter)
+        .limit(9)
+        .select(fields)
+
+      return res.json({ success: true, albums, count })
+    } else {
+      let offset = Number(req.params.page)
+      if (isNaN(offset)) offset = 0
+      else if (offset < 0) offset = Math.max(0, Math.ceil(count / 25) + offset)
+
+      fields = fields.concat(['identifier', 'enabled', 'timestamp', 'editedAt', 'download', 'public', 'description'])
+      if (all)
+        fields.push('userid')
+
+      albums = await db.table('albums')
+        .where(filter)
+        .limit(25)
+        .offset(25 * offset)
+        .select(fields)
+    }
+
+    const albumids = {}
+    for (const album of albums) {
+      album.download = album.download !== 0
+      album.public = album.public !== 0
+      album.uploads = 0
+
+      // Map by IDs
+      albumids[album.id] = album
+    }
+
+    const uploads = await db.table('files')
+      .whereIn('albumid', Object.keys(albumids))
+      .select('albumid')
+
+    for (const upload of uploads)
+      if (albumids[upload.albumid])
+        albumids[upload.albumid].uploads++
+
+    // If we are not listing all albums, send response
+    if (!all)
+      return res.json({ success: true, albums, count, homeDomain })
+
+    // Otherwise proceed to querying usernames
+    const userids = albums
+      .map(album => album.userid)
+      .filter((v, i, a) => {
+        return v !== null && v !== undefined && v !== '' && a.indexOf(v) === i
+      })
+
+    // If there are no albums attached to a registered user, send response
+    if (userids.length === 0)
+      return res.json({ success: true, albums, count, homeDomain })
+
+    // Query usernames of user IDs from currently selected files
+    const usersTable = await db.table('users')
+      .whereIn('id', userids)
+      .select('id', 'username')
+
+    const users = {}
+    for (const user of usersTable)
+      users[user.id] = user.username
+
+    return res.json({ success: true, albums, count, users, homeDomain })
+  } catch (error) {
+    logger.error(error)
+    return res.status(500).json({ success: false, description: 'An unexpected error occurred. Try again?' })
+  }
 }
 
 self.create = async (req, res, next) => {
@@ -161,6 +225,11 @@ self.create = async (req, res, next) => {
 }
 
 self.delete = async (req, res, next) => {
+  // Map /delete requests to /disable route
+  return self.disable(req, res, next)
+}
+
+self.disable = async (req, res, next) => {
   const user = await utils.authorize(req, res)
   if (!user) return
 
@@ -193,6 +262,7 @@ self.delete = async (req, res, next) => {
       })
       .update('enabled', 0)
     utils.invalidateAlbumsCache([id])
+    utils.invalidateStatsCache('albums')
 
     const identifier = await db.table('albums')
       .select('identifier')
@@ -218,6 +288,8 @@ self.edit = async (req, res, next) => {
   const user = await utils.authorize(req, res)
   if (!user) return
 
+  const ismoderator = perms.is(user, 'moderator')
+
   const id = parseInt(req.body.id)
   if (isNaN(id))
     return res.json({ success: false, description: 'No album specified.' })
@@ -229,13 +301,19 @@ self.edit = async (req, res, next) => {
   if (!name)
     return res.json({ success: false, description: 'No name specified.' })
 
+  const filter = function () {
+    this.where('id', id)
+
+    if (!ismoderator)
+      this.andWhere({
+        enabled: 1,
+        userid: user.id
+      })
+  }
+
   try {
     const album = await db.table('albums')
-      .where({
-        id,
-        userid: user.id,
-        enabled: 1
-      })
+      .where(filter)
       .first()
 
     if (!album)
@@ -248,7 +326,6 @@ self.edit = async (req, res, next) => {
 
     const update = {
       name,
-      editedAt: Math.floor(Date.now() / 1000),
       download: Boolean(req.body.download),
       public: Boolean(req.body.public),
       description: typeof req.body.description === 'string'
@@ -256,16 +333,17 @@ self.edit = async (req, res, next) => {
         : ''
     }
 
+    if (ismoderator)
+      update.enabled = Boolean(req.body.enabled)
+
     if (req.body.requestLink)
       update.identifier = await self.getUniqueRandomName()
 
     await db.table('albums')
-      .where({
-        id,
-        userid: user.id
-      })
+      .where(filter)
       .update(update)
     utils.invalidateAlbumsCache([id])
+    utils.invalidateStatsCache('albums')
 
     if (req.body.requestLink) {
       self.onHold.delete(update.identifier)
@@ -382,10 +460,6 @@ self.generateZip = async (req, res, next) => {
     if ((isNaN(versionString) || versionString <= 0) && album.editedAt)
       return res.redirect(`${album.identifier}?v=${album.editedAt}`)
 
-    // TODO: editedAt column will now be updated whenever
-    // a user is simply editing the album's name/description.
-    // Perhaps add a new timestamp column that will only be updated
-    // when the files in the album are actually modified?
     if (album.zipGeneratedAt > album.editedAt)
       try {
         const filePath = path.join(paths.zips, `${identifier}.zip`)
@@ -530,6 +604,7 @@ self.addFiles = async (req, res, next) => {
     await db.table('albums')
       .whereIn('id', albumids)
       .update('editedAt', Math.floor(Date.now() / 1000))
+    utils.invalidateAlbumsCache(albumids)
 
     return res.json({ success: true, failed })
   } catch (error) {

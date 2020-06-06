@@ -17,9 +17,14 @@
 {{ super() }}
 <section class="section">
   <div class="container has-text-left">
-    <h1 id="general" class='title is-spaced'>General</h1>
+    <h1 class="title">
+      Frequently Asked Questions
+    </h1>
+    <hr>
 
-    <h2 class='subtitle is-brighter'>What is {{ globals.name }}?</h2>
+    <h2 id="general" class='title is-spaced'>General</h2>
+
+    <h3 class="subtitle is-brighter">What is {{ globals.name }}?</h3>
     <article class="message">
       <div class="message-body">
         This is a fork of <a href="https://github.com/WeebDev/lolisafe" target="_blank" rel="noopener">lolisafe</a>.<br>
@@ -28,7 +33,7 @@
     </article>
 
     {% if globals.enable_faq_banned_categories -%}
-    <h2 class='subtitle is-brighter'>Are there any <strong>banned categories</strong>?</h2>
+    <h3 class="subtitle is-brighter">Are there any <strong>banned categories</strong>?</h3>
     <article class="message">
       <div class="message-body">
         Banned categories are the following, <i>but not limited to</i>:<br>
@@ -47,7 +52,7 @@
     </article>
     {%- endif %}
 
-    <h2 class='subtitle is-brighter'>Will you keep my uploads forever?</h2>
+    <h3 class="subtitle is-brighter">Will you keep my uploads forever?</h3>
     <article class="message">
       <div class="message-body">
         Unless the uploads are included within the banned categories above, or some other bullshit, I will.<br>
@@ -60,7 +65,7 @@
       </div>
     </article>
 
-    <h2 class='subtitle is-brighter'>How can I keep track of my uploads?</h2>
+    <h3 class="subtitle is-brighter">How can I keep track of my uploads?</h3>
     <article class="message">
       <div class="message-body">
         Simply create a user on the site and every uploads will be associated with your account, granting you access to your uploads through our Dashboard.<br>
@@ -68,7 +73,7 @@
       </div>
     </article>
 
-    <h2 class='subtitle is-brighter'>What are albums?</h2>
+    <h3 class="subtitle is-brighter">What are albums?</h3>
     <article class="message">
       <div class="message-body">
         Albums are a simple way of sorting/categorizing uploads together.<br>
@@ -78,14 +83,14 @@
       </div>
     </article>
 
-    <h2 class='subtitle is-brighter'>Why should I use this?</h2>
+    <h3 class="subtitle is-brighter">Why should I use this?</h3>
     <article class="message">
       <div class="message-body">
         I don't know.
       </div>
     </article>
 
-    <h2 class='subtitle is-brighter'>I saw something too illegal for my tastes here, what should I do?</h2>
+    <h3 class="subtitle is-brighter">I saw something too illegal for my tastes here, what should I do?</h3>
     <article class="message">
       <div class="message-body">
         Send a strongly worded email to <a href="mailto:{{ globals.email }}">{{ globals.email }}</a> and I will try to get back to you within <strong>48 hours</strong>.<br>
@@ -94,7 +99,7 @@
     </article>
 
     {% if globals.support -%}
-    <h2 class='subtitle is-brighter'>How can I support {{ globals.name }}?</h2>
+    <h3 class="subtitle is-brighter">How can I support {{ globals.name }}?</h3>
     <article class="message">
       <div class="message-body">
         {{ globals.support | safe }}
@@ -106,9 +111,9 @@
 
 <section class="section">
   <div class="container has-text-left">
-    <h1 id="technical" class='title is-spaced'>Technical</h1>
+    <h2 id="technical" class='title is-spaced'>Technical</h2>
 
-    <h2 class='subtitle is-brighter'>What are the allowed extensions here?</h2>
+    <h3 class="subtitle is-brighter">What are the allowed extensions here?</h3>
     <article class="message">
       <div class="message-body">
         {% if extensionsFilter.length -%}
@@ -127,7 +132,7 @@
       </div>
     </article>
 
-    <h2 class='subtitle is-brighter'>Why are my <strong>.htm/.html</strong> uploads being served as plain text?</h2>
+    <h3 class="subtitle is-brighter">Why are my <strong>.htm/.html</strong> uploads being served as plain text?</h3>
     <article class="message">
       <div class="message-body">
         There had been too many phishing pages being uploaded in the past.
@@ -135,7 +140,7 @@
     </article>
 
     {% if globals.server_location -%}
-    <h2 class='subtitle is-brighter'>Where is the server located?</h2>
+    <h3 class="subtitle is-brighter">Where is the server located?</h3>
     <article class="message">
       <div class="message-body">
         {{ globals.server_location | safe }}.
@@ -148,7 +153,7 @@
     {%- endif %}
 
     {% if config.cloudflare.purgeCache -%}
-    <h2 class='subtitle is-brighter'>Since my uploads are cached, what about after I delete them from the dashboard?</h2>
+    <h3 class="subtitle is-brighter">Since my uploads are cached, what about after I delete them from the dashboard?</h3>
     <article class="message">
       <div class="message-body">
         We will send API requests to Cloudflare to purge their cache immediately after you delete your uploads from the dashboard.<br>
@@ -158,7 +163,7 @@
     {%- endif %}
 
     {% if globals.enable_faq_tor -%}
-    <h2 class='subtitle is-brighter'>I cannot access this website with Tor and/or VPNs!?</h2>
+    <h3 class="subtitle is-brighter">I cannot access this website with Tor and/or VPNs!?</h3>
     <article class="message">
       <div class="message-body">
         My server is actively refreshing and blacklisting Tor exit nodes.<br>
@@ -169,7 +174,7 @@
     </article>
     {%- endif %}
 
-    <h2 class='subtitle is-brighter'>Are there any Desktop clients?</h2>
+    <h3 class="subtitle is-brighter">Are there any Desktop clients?</h3>
     <article class="message">
       <div class="message-body">
         We do have some browser extensions:<br>
@@ -187,7 +192,7 @@
       </div>
     </article>
 
-    <h2 class='subtitle is-brighter'>Do you have a No-JS uploader form?</h2>
+    <h3 class="subtitle is-brighter">Do you have a No-JS uploader form?</h3>
     <article class="message">
       <div class="message-body">
         <a href="nojs" target="_blank"><strong>Yes!</strong></a>
@@ -195,7 +200,7 @@
     </article>
 
     {% if noJsMaxSizeInt and chunkSizeInt -%}
-    <h2 class='subtitle is-brighter'>Why is the maximum file size in the No-JS uploader form smaller?</h2>
+    <h3 class="subtitle is-brighter">Why is the maximum file size in the No-JS uploader form smaller?</h3>
     <article class="message">
       <div class="message-body">
         This site is using Cloudflare, which limits the maximum upload size.<br>
@@ -205,7 +210,7 @@
     {%- endif %}
 
     {% if chunkSizeInt -%}
-    <h2 class='subtitle is-brighter'>So your API supports chunked uploads?</h2>
+    <h3 class="subtitle is-brighter">So your API supports chunked uploads?</h3>
     <article class="message">
       <div class="message-body">
         <strong>Yes.</strong> The homepage uploader was coded to chunk uploads into {{ chunkSizeInt }} MB pieces by default. However, this is configurable through its Config tab.<br>
@@ -218,7 +223,7 @@
     {%- endif %}
 
     {% if globals.fork_repo -%}
-    <h2 class='subtitle is-brighter'>I found a bug! -or- I want to request a feature!</h2>
+    <h3 class="subtitle is-brighter">I found a bug! -or- I want to request a feature!</h3>
     <article class="message">
       <div class="message-body">
         Feel free to create a {{ globals.fork_host }} issue <a href="{{ globals.fork_issues }}" target="_blank" rel="noopener">here</a>.</br>
@@ -227,7 +232,7 @@
     </article>
     {%- endif %}
 
-    <h2 class='subtitle is-brighter'>How do I delete my own account <strong>and</strong> all the uploads associated with it?</h2>
+    <h3 class="subtitle is-brighter">How do I delete my own account <strong>and</strong> all the uploads associated with it?</h3>
     <article class="message">
       <div class="message-body">
         For now, you will also have to contact me through my email above.<br>
@@ -240,16 +245,16 @@
 
 <section class="section has-extra-bottom-padding">
   <div class="container has-text-left">
-    <h1 id="privacy" class='title is-spaced'>Privacy</h1>
+    <h2 id="privacy" class='title is-spaced'>Privacy</h2>
 
-    <h2 class='subtitle is-brighter'>What information is kept with uploads?</h2>
+    <h3 class="subtitle is-brighter">What information is kept with uploads?</h3>
     <article class="message">
       <div class="message-body">
         The uploader's <strong>IP address</strong>.
       </div>
     </article>
 
-    <h2 class='subtitle is-brighter'>What information is kept with users?</h2>
+    <h3 class="subtitle is-brighter">What information is kept with users?</h3>
     <article class="message">
       <div class="message-body">
         Technically, <strong>none</strong>.<br>
@@ -259,7 +264,7 @@
       </div>
     </article>
 
-    <h2 class='subtitle is-brighter'>Why do you need to keep my IP address?</h2>
+    <h3 class="subtitle is-brighter">Why do you need to keep my IP address?</h3>
     <article class="message">
       <div class="message-body">
         <strong>Security purposes.</strong><br>
@@ -268,19 +273,19 @@
       </div>
     </article>
 
-    <h2 class='subtitle is-brighter'>Does the server have some sort of access logs?</h2>
+    <h3 class="subtitle is-brighter">Does the server have some sort of access logs?</h3>
     <article class="message">
       <div class="message-body">
         <strong>Yes.</strong><br>
         The logs contain each visitor's IP address.<br>
         This is required by our automated system, that checks logs in real time to detect and punish abuse, such as DDoS attempts, scanners, and so on.<br>
         Logs are rotated daily, and the server will only keep the last 10 logs.<br>
-        So you can be reassured that the logs will only be kept for <strong>10 days at most</strong>.
+        So you can be assured that the logs will only be kept for <strong>10 days at most</strong>.
       </div>
     </article>
 
     {% if config.cookiePolicy -%}
-    <h2 class='subtitle is-brighter'>Cookies</h2>
+    <h3 class="subtitle is-brighter">Cookies</h3>
     <article class="message">
       <div class="message-body">
         We use cookies to offer you a better browsing experience and to analyze our traffic.<br>
@@ -290,7 +295,7 @@
     </article>
     {%- endif %}
 
-    <h2 class='subtitle is-brighter'>I still have more unanswered questions!</h2>
+    <h3 class="subtitle is-brighter">I still have more unanswered questions!</h3>
     <article class="message">
       <div class="message-body">
         Feel free to email <a href="mailto:{{ globals.email }}">{{ globals.email }}</a>.

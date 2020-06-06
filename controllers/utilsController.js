@@ -49,20 +49,17 @@ const statsCache = {
   albums: {
     cache: null,
     generating: false,
-    generatedAt: 0,
-    invalidatedAt: 0
+    generatedAt: 0
   },
   users: {
     cache: null,
     generating: false,
-    generatedAt: 0,
-    invalidatedAt: 0
+    generatedAt: 0
   },
   uploads: {
     cache: null,
     generating: false,
-    generatedAt: 0,
-    invalidatedAt: 0
+    generatedAt: 0
   }
 }
 
@@ -264,14 +261,19 @@ self.generateThumbs = async (name, extname, force) => {
 
       await new Promise((resolve, reject) => {
         ffmpeg(input)
-          .inputOptions([
+          .seekInput(duration * 20 / 100)
+          .frames(1)
+          .videoFilters([
+            {
+              filter: 'select',
+              options: 'eq(pict_type\\,I)'
+            },
+            {
+              filter: 'scale',
+              options: '${self.thumbSize}:${self.thumbSize}:force_original_aspect_ratio=decrease'
+            }
           ])
           .output(thumbname)
-          .outputOptions([
-            `-ss ${duration * 20 / 100}`,
-            '-vframes 1',
-            `-vf scale=${self.thumbSize}:${self.thumbSize}:force_original_aspect_ratio=decrease`
-          ])
           .on('error', async error => {
             // Try to unlink thumbnail,
             // since ffmpeg may have created an incomplete thumbnail
@@ -460,11 +462,13 @@ self.bulkDeleteFromDb = async (field, values, user) => {
 
     if (unlinkeds.length) {
       // Update albums if necessary, but do not wait
-      if (albumids.length)
+      if (albumids.length) {
         db.table('albums')
           .whereIn('id', albumids)
           .update('editedAt', Math.floor(Date.now() / 1000))
           .catch(logger.error)
+        self.invalidateAlbumsCache(albumids)
+      }
 
       // Purge Cloudflare's cache if necessary, but do not wait
       if (config.cloudflare.purgeCache)
@@ -575,12 +579,11 @@ self.invalidateAlbumsCache = albumids => {
     delete self.albumsCache[albumid]
     delete self.albumsCache[`${albumid}-nojs`]
   }
-  self.invalidateStatsCache('albums')
 }
 
 self.invalidateStatsCache = type => {
   if (!['albums', 'users', 'uploads'].includes(type)) return
-  statsCache[type].invalidatedAt = Date.now()
+  statsCache[type].cache = null
 }
 
 self.stats = async (req, res, next) => {
@@ -777,7 +780,7 @@ self.stats = async (req, res, next) => {
     // Uploads
     if (!statsCache.uploads.cache && statsCache.uploads.generating) {
       stats.uploads = false
-    } else if ((statsCache.uploads.invalidatedAt < statsCache.uploads.generatedAt) || statsCache.uploads.generating) {
+    } else if (statsCache.uploads.cache) {
       stats.uploads = statsCache.uploads.cache
     } else {
       statsCache.uploads.generating = true
@@ -834,7 +837,7 @@ self.stats = async (req, res, next) => {
     // Users
     if (!statsCache.users.cache && statsCache.users.generating) {
       stats.users = false
-    } else if ((statsCache.users.invalidatedAt < statsCache.users.generatedAt) || statsCache.users.generating) {
+    } else if (statsCache.users.cache) {
       stats.users = statsCache.users.cache
     } else {
       statsCache.users.generating = true
@@ -877,7 +880,7 @@ self.stats = async (req, res, next) => {
     // Albums
     if (!statsCache.albums.cache && statsCache.albums.generating) {
       stats.albums = false
-    } else if ((statsCache.albums.invalidatedAt < statsCache.albums.generatedAt) || statsCache.albums.generating) {
+    } else if (statsCache.albums.cache) {
       stats.albums = statsCache.albums.cache
     } else {
       statsCache.albums.generating = true

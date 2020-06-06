@@ -333,20 +333,37 @@ self.actuallyUploadUrls = async (req, res, user, albumid, age) => {
           .replace(/{url}/g, encodeURIComponent(url))
           .replace(/{url-noprot}/g, encodeURIComponent(url.replace(/^https?:\/\//, '')))
 
-      // Limit max response body size with maximum allowed size
-      const fetchFile = await fetch(url, { size: urlMaxSizeBytes })
-      if (fetchFile.status !== 200)
-        throw `${fetchFile.status} ${fetchFile.statusText}`
-
-      const headers = fetchFile.headers
-      const file = await fetchFile.buffer()
-
       const length = self.parseFileIdentifierLength(req.headers.filelength)
       const name = await self.getUniqueRandomName(length, extname)
 
       const destination = path.join(paths.uploads, name)
-      await paths.writeFile(destination, file)
+      const outStream = fs.createWriteStream(destination)
+      const hash = blake3.createHash()
+
+      // Push to array early, so regardless of its progress it will be deleted on errors
       downloaded.push(destination)
+
+      // Limit max response body size with maximum allowed size
+      const fetchFile = await fetch(url, { size: urlMaxSizeBytes })
+        .then(res => new Promise((resolve, reject) => {
+          if (res.status === 200) {
+            const onerror = error => {
+              hash.dispose()
+              reject(error)
+            }
+            outStream.on('error', onerror)
+            res.body.on('error', onerror)
+            res.body.on('data', d => hash.update(d))
+
+            res.body.pipe(outStream)
+            outStream.on('finish', () => resolve(res))
+          } else {
+            resolve(res)
+          }
+        }))
+
+      if (fetchFile.status !== 200)
+        throw `${fetchFile.status} ${fetchFile.statusText}`
 
       infoMap.push({
         path: destination,
@@ -354,8 +371,9 @@ self.actuallyUploadUrls = async (req, res, user, albumid, age) => {
           filename: name,
           originalname: original,
           extname,
-          mimetype: headers.get('content-type').split(';')[0] || '',
-          size: file.byteLength,
+          mimetype: fetchFile.headers.get('content-type').split(';')[0] || '',
+          size: outStream.bytesWritten,
+          hash: hash.digest('hex'),
           albumid,
           age
         }
@@ -508,30 +526,32 @@ self.actuallyFinishChunks = async (req, res, user) => {
 
 self.combineChunks = async (destination, uuid) => {
   let errorObj
-  const writeStream = fs.createWriteStream(destination, { flags: 'a' })
+  const outStream = fs.createWriteStream(destination, { flags: 'a' })
   const hash = blake3.createHash()
+
+  outStream.on('error', error => {
+    hash.dispose()
+    errorObj = error
+  })
 
   try {
     chunksData[uuid].chunks.sort()
     for (const chunk of chunksData[uuid].chunks)
       await new Promise((resolve, reject) => {
         const stream = fs.createReadStream(path.join(chunksData[uuid].root, chunk))
-        stream.pipe(writeStream, { end: false })
+        stream.pipe(outStream, { end: false })
 
         stream.on('data', d => hash.update(d))
-        stream.on('error', error => {
-          hash.dispose()
-          reject(error)
-        })
-
+        stream.on('error', reject)
         stream.on('end', () => resolve())
       })
   } catch (error) {
+    hash.dispose()
     errorObj = error
   }
 
   // Close stream
-  writeStream.end()
+  outStream.end()
 
   // Re-throw error
   if (errorObj) throw errorObj
@@ -1330,23 +1350,8 @@ self.list = async (req, res) => {
 
     return res.json({ success: true, files, count, users, albums, basedomain })
   } catch (error) {
-    // If moderator, capture SQLITE_ERROR and use its error message for the response's description
-    let errorString
-    if (ismoderator && error.code === 'SQLITE_ERROR') {
-      const match = error.message.match(/SQLITE_ERROR: .*$/)
-      errorString = match && match[0]
-    }
-
-    // If not proper SQLITE_ERROR, log to console
-    if (!errorString) {
-      logger.error(error)
-      res.status(500) // Use 500 status code
-    }
-
-    return res.json({
-      success: false,
-      description: errorString || 'An unexpected error occurred. Try again?'
-    })
+    logger.error(error)
+    return res.status(500).json({ success: false, description: 'An unexpected error occurred. Try again?' })
   }
 }
 

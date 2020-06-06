@@ -13,12 +13,12 @@
 <section class="section has-extra-bottom-padding">
   <div class="container has-text-left">
     <h1 class='title'>Cookie Policy</h1>
-    <h1 class="subtitle">
+    <p class="subtitle">
       {{ globals.whole_cookie }} may use cookies. This page describe how and why we use cookies.
-    </h1>
+    </p>
     <hr>
 
-    <h2 class='subtitle is-brighter'>What are cookies? -or- How to disable cookies?</h2>
+    <h3 class="subtitle is-brighter">What are cookies? -or- How to disable cookies?</h3>
     <article class="message">
       <div class="message-body">
         <strong>Simply put, a cookie is a technology for remembering something about you.</strong><br>
@@ -26,7 +26,7 @@
       </div>
     </article>
 
-    <h2 class='subtitle is-brighter'>How We Use Cookies</h2>
+    <h3 class="subtitle is-brighter">How We Use Cookies</h3>
     <article class="message">
       <div class="message-body">
         We use cookies for a variety of reasons detailed below.<br>
@@ -35,14 +35,14 @@
       </div>
     </article>
 
-    <h2 class='subtitle is-brighter'>Account related cookies</h2>
+    <h3 class="subtitle is-brighter">Account related cookies</h3>
     <article class="message">
       <div class="message-body">
         If you create an account with us, then we will use cookies for the management of the signup process and general administration.
       </div>
     </article>
 
-    <h2 class='subtitle is-brighter'>Login related cookies</h2>
+    <h3 class="subtitle is-brighter">Login related cookies</h3>
     <article class="message">
       <div class="message-body">
         We use cookies when you are logged in so that we can remember that you are logged in.<br>
@@ -51,22 +51,22 @@
       </div>
     </article>
 
-    <h2 class='subtitle is-brighter'>What information do we know about you?</h2>
+    <h3 class="subtitle is-brighter">What information do we know about you?</h3>
     <article class="message">
       <div class="message-body">
-        We don’t request or require you to provide personal information to access our web site.<br>
+        We don’t request or require you to provide personal information to access our website.<br>
         However, we may receive your IP address and user agent automatically.
       </div>
     </article>
 
-    <h2 class='subtitle is-brighter'>What about cookies?</h2>
+    <h3 class="subtitle is-brighter">What about cookies?</h3>
     <article class="message">
       <div class="message-body">
         {{ globals.whole_cookie }} may place cookies on your browser in order to identify you when you return to our website.
       </div>
     </article>
 
-    <h2 class='subtitle is-brighter'>Cookies We May Use</h2>
+    <h3 class="subtitle is-brighter">Cookies We May Use</h3>
     <article class="message">
       <div class="message-body">
         We may use the following cookies:<br>
@@ -125,21 +125,33 @@
                 <td>LocalStorage</td>
               </tr>
               <tr>
+                <th>selectedAlbums</th>
+                <td>{{ globals.root_domain }}</td>
+                <td>Personalization</td>
+                <td>LocalStorage</td>
+              </tr>
+              <tr>
+                <th>selectedAlbumsAll</th>
+                <td>{{ globals.root_domain }}</td>
+                <td>Personalization</td>
+                <td>LocalStorage</td>
+              </tr>
+              <tr>
                 <th>selectedUploads</th>
                 <td>{{ globals.root_domain }}</td>
-                <td>Necessary</td>
+                <td>Personalization</td>
                 <td>LocalStorage</td>
               </tr>
               <tr>
                 <th>selectedUploadsAll</th>
                 <td>{{ globals.root_domain }}</td>
-                <td>Necessary</td>
+                <td>Personalization</td>
                 <td>LocalStorage</td>
               </tr>
               <tr>
                 <th>selectedUsers</th>
                 <td>{{ globals.root_domain }}</td>
-                <td>Necessary</td>
+                <td>Personalization</td>
                 <td>LocalStorage</td>
               </tr>
               <tr>
@@ -175,22 +187,25 @@
               <tr>
                 <th>viewTypeUploads</th>
                 <td>{{ globals.root_domain }}</td>
-                <td>Necessary</td>
+                <td>Personalization</td>
                 <td>LocalStorage</td>
               </tr>
               <tr>
                 <th>viewTypeUploadsAll</th>
                 <td>{{ globals.root_domain }}</td>
-                <td>Necessary</td>
+                <td>Personalization</td>
                 <td>LocalStorage</td>
               </tr>
             </tbody>
           </table>
         </div>
+        Only Analytics keys will be set on first page load regardless of your consent.<br>
+        The rest will only be set as you use features of our website.<br>
+        However, all Personalization keys should delete themselves once you set back their default values.
       </div>
     </article>
 
-    <h2 class='subtitle is-brighter'>Questions?</h2>
+    <h3 class="subtitle is-brighter">Questions?</h3>
     <article class="message">
       <div class="message-body">
         For more information, email <a href="mailto:{{ globals.email }}">{{ globals.email }}</a>.

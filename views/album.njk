@@ -50,9 +50,9 @@
           </h1>
         </div>
         <div class="level-item">
-          <h1 id="count" class="subtitle">
+          <p id="count" class="subtitle">
             {{ files.length }} file{{ 's' if files.length !== 1 }} (<span class="file-size">{{ album.totalSize }} B</span>)
-          </h1>
+          </p>
         </div>
       </div>
 
@@ -126,7 +126,7 @@
 {% set floatingHomeHref = '..' %}
 {% include "_partial/floating-home.njk" %}
 {% if not nojs -%}
-{% set noscriptMessage = 'If you are not redirected to its No-JS version, please <a href="' + noJsUrl + '">click here</a>.' %}
+{% set noscriptMessage = 'If you are not automatically redirected to its No-JS version, <a href="' + noJsUrl + '">click here</a>.' %}
 {% include "_partial/noscript.njk" %}
 {%- endif %}
 {% endblock %}

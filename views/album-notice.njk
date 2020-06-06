@@ -1,0 +1,29 @@
+{% set metaTitle %}
+{{- album.name | truncate(60, true, '…') -}}
+{% endset %}
+{% set metaDesc = album.description | striptags | truncate(200, true, '…') %}
+{% set metaUrl = '/' + album.url %}
+
+{% extends "_layout.njk" %}
+
+{% block stylesheets %}
+<!-- Stylesheets -->
+<link rel="stylesheet" href="../libs/bulma/bulma.min.css{{ versions[3] }}">
+<link rel="stylesheet" href="../libs/fontello/fontello.css{{ versions[1] }}">
+<link rel="stylesheet" href="../css/style.css{{ versions[1] }}">
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+<section class="hero is-fullheight">
+  <div class="hero-body">
+    <div class="container has-text-centered is-size-5">
+      <p>
+        {{ notice }}
+      </p>
+    </div>
+  </div>
+</section>
+
+{% include "_partial/floating-home.njk" %}
+{% endblock %}

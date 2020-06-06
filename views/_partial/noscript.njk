@@ -1,13 +1,15 @@
 <noscript>
   <section id="noscript" class="hero is-fullheight">
     <div class="hero-body">
-      <div class="container has-text-centered">
-        <p>This page requires JavaScript to function.</p>
+      <div class="container has-text-centered is-size-5">
+        <p>
+          This page requires JavaScript to function.
+        </p>
         <p>
           {%- if noscriptMessage -%}
           {{ noscriptMessage | safe }}
           {%- else -%}
-          If you are not redirected to the No-JS uploader, please <a href="nojs">click here</a>.
+          If you are not automatically redirected to our No-JS uploader, <a href="nojs">click here</a>.
           {%- endif -%}
         </p>
       </div>

@@ -141,6 +141,41 @@ fieldset[disabled] .textarea {
   fill: #fff
 }
 
+.button.is-dangerish {
+  background-color: #ff7043;
+  border-color: transparent;
+  color: rgba(0, 0, 0, 0.7)
+}
+
+.button.is-dangerish.is-hovered,
+.button.is-dangerish:not([disabled]):hover {
+  background-color: #ff8a65;
+  border-color: transparent;
+  color: rgba(0, 0, 0, 0.7)
+}
+
+.button.is-dangerish.is-active,
+.button.is-dangerish:not([disabled]):active {
+  background-color: #ff5722;
+  border-color: transparent;
+  color: rgba(0, 0, 0, 0.7)
+}
+
+.button.is-dangerish.is-outlined {
+  background-color: transparent;
+  border-color: #ff7043;
+  color: #ff7043
+}
+
+.button.is-dangerish.is-outlined.is-focused,
+.button.is-dangerish.is-outlined.is-hovered,
+.button.is-dangerish.is-outlined:not([disabled]):focus,
+.button.is-dangerish.is-outlined:not([disabled]):hover {
+  background-color: #ff7043;
+  border-color: #ff7043;
+  color: rgba(0, 0, 0, 0.7)
+}
+
 .button.is-wrappable {
   white-space: break-spaces;
   min-height: 2.25em;

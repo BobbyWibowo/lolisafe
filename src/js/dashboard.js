@@ -9,6 +9,8 @@ const lsKeys = {
   selected: {
     uploads: 'selectedUploads',
     uploadsAll: 'selectedUploadsAll',
+    albums: 'selectedAlbums',
+    albumsAll: 'selectedAlbumsAll',
     users: 'selectedUsers'
   }
 }
@@ -32,52 +34,53 @@ const page = {
 
   currentView: null,
   views: {
-    // config of uploads view
+    // params of uploads view
     uploads: {
       type: localStorage[lsKeys.viewType.uploads],
       album: null, // album's id
-      pageNum: null // page num
+      pageNum: null
     },
-    // config of uploads view (all)
+    // params of uploads view (all)
     uploadsAll: {
       type: localStorage[lsKeys.viewType.uploadsAll],
-      filters: null, // uploads' filters
-      pageNum: null, // page num
+      filters: null,
+      pageNum: null,
       all: true
     },
-    // config of users view
+    // params of albums view
+    albums: {
+      filters: null,
+      pageNum: null
+    },
+    // params of albums view (all)
+    albumsAll: {
+      filters: null,
+      pageNum: null,
+      all: true
+    },
+    // params of users view
     users: {
-      filters: null, // users' filters
+      filters: null,
       pageNum: null
     }
   },
 
-  // id of selected items (shared across pages and will be synced with localStorage)
+  // ids of selected items (shared across pages and will be synced with localStorage)
   selected: {
     uploads: [],
     uploadsAll: [],
+    albums: [],
+    albumsAll: [],
     users: []
   },
-  checkboxes: {
-    uploads: [],
-    uploadsAll: [],
-    users: []
-  },
-  lastSelected: {
-    upload: null,
-    uploadsAll: null,
-    user: null
-  },
+  checkboxes: [],
+  lastSelected: [],
 
   // select album dom for dialogs/modals
   selectAlbumContainer: null,
 
   // cache for dialogs/modals
-  cache: {
-    uploads: {},
-    albums: {},
-    users: {}
-  },
+  cache: {},
 
   clipboardJS: null,
   lazyLoad: null,
@@ -208,11 +211,12 @@ page.prepareDashboard = () => {
   const itemMenus = [
     { selector: '#itemUploads', onclick: page.getUploads },
     { selector: '#itemDeleteUploadsByNames', onclick: page.deleteUploadsByNames },
-    { selector: '#itemManageAlbums', onclick: page.getAlbums },
+    { selector: '#itemManageYourAlbums', onclick: page.getAlbums },
     { selector: '#itemManageToken', onclick: page.changeToken },
     { selector: '#itemChangePassword', onclick: page.changePassword },
     { selector: '#itemLogout', onclick: page.logout },
     { selector: '#itemManageUploads', onclick: page.getUploads, params: { all: true }, group: 'moderator' },
+    { selector: '#itemManageAlbums', onclick: page.getAlbums, params: { all: true }, group: 'moderator' },
     { selector: '#itemStatistics', onclick: page.getStatistics, group: 'admin' },
     { selector: '#itemManageUsers', onclick: page.getUsers, group: 'admin' }
   ]
@@ -357,8 +361,10 @@ page.domClick = event => {
       return page.submitAlbum(element)
     case 'edit-album':
       return page.editAlbum(id)
-    case 'delete-album':
-      return page.deleteAlbum(id)
+    case 'disable-album':
+      return page.disableAlbum(id)
+    case 'view-album-uploads':
+      return page.viewAlbumUploads(id, element)
     // Manage users
     case 'create-user':
       return page.createUser()
@@ -370,12 +376,6 @@ page.domClick = event => {
       return page.deleteUser(id)
     case 'view-user-uploads':
       return page.viewUserUploads(id, element)
-    /* // WIP
-    case 'user-filters-help':
-      return page.userFiltersHelp(element)
-    case 'filter-users':
-      return page.filterUsers(element)
-    */
     // Others
     case 'get-new-token':
       return page.getNewToken(element)
@@ -416,6 +416,30 @@ page.fadeAndScroll = disableFading => {
   })
 }
 
+page.getByView = (view, get) => {
+  switch (view) {
+    case 'uploads':
+    case 'uploadsAll':
+      return {
+        type: 'uploads',
+        func: page.getUploads
+      }[get]
+    case 'albums':
+    case 'albumsAll':
+      return {
+        type: 'albums',
+        func: page.getAlbums
+      }[get]
+    case 'users':
+      return {
+        type: 'users',
+        func: page.getUsers
+      }[get]
+    default:
+      return null
+  }
+}
+
 page.switchPage = (action, element) => {
   if (page.isSomethingLoading)
     return page.warnSomethingLoading()
@@ -425,7 +449,7 @@ page.switchPage = (action, element) => {
     trigger: element
   })
 
-  const func = page.currentView === 'users' ? page.getUsers : page.getUploads
+  const func = page.getByView(page.currentView, 'func')
 
   switch (action) {
     case 'page-prev':
@@ -508,11 +532,13 @@ page.getUploads = (params = {}) => {
       }
 
     page.currentView = params.all ? 'uploadsAll' : 'uploads'
-    page.cache.uploads = {}
+    page.cache = {}
 
     const albums = response.data.albums
     const users = response.data.users
     const basedomain = response.data.basedomain
+
+    if (params.pageNum < 0) params.pageNum = Math.max(0, pages + params.pageNum)
     const pagination = page.paginate(response.data.count, 25, params.pageNum)
 
     const filter = `
@@ -520,7 +546,7 @@ page.getUploads = (params = {}) => {
         <form class="prevent-default">
           <div class="field has-addons">
             <div class="control is-expanded">
-              <input id="filters" class="input is-small" type="text" placeholder="Filters" value="${page.escape(params.filters || '')}">
+              <input id="filters" class="input is-small" type="text" placeholder="Filter uploads" value="${page.escape(params.filters || '')}">
             </div>
             <div class="control">
               <button type="button" class="button is-small is-primary is-outlined" title="Help?" data-action="upload-filters-help"${params.all ? ' data-all="true"' : ''}>
@@ -633,7 +659,7 @@ page.getUploads = (params = {}) => {
         files[i].type = 'video'
 
       // Cache bare minimum data for thumbnails viewer
-      page.cache.uploads[files[i].id] = {
+      page.cache[files[i].id] = {
         name: files[i].name,
         thumb: files[i].thumb,
         original: files[i].file,
@@ -723,7 +749,7 @@ page.getUploads = (params = {}) => {
         `
 
         table.appendChild(div)
-        page.checkboxes[page.currentView] = table.querySelectorAll('.checkbox[data-action="select"]')
+        page.checkboxes = table.querySelectorAll('.checkbox[data-action="select"]')
       }
     } else {
       const allAlbums = params.all && params.filters && params.filters.includes('albumid:')
@@ -765,7 +791,7 @@ page.getUploads = (params = {}) => {
           <td class="controls"><input type="checkbox" class="checkbox" title="Select" data-index="${i}" data-action="select"${upload.selected ? ' checked' : ''}></td>
           <th><a href="${upload.file}" target="_blank" title="${upload.file}">${upload.name}</a></th>
           ${params.album === undefined ? `<th>${upload.appendix}</th>` : ''}
-          ${allAlbums ? `<th>${files[i].albumid ? (albums[files[i].albumid] || '') : ''}</th>` : ''}
+          ${allAlbums ? `<th>${upload.albumid ? (albums[upload.albumid] || '') : ''}</th>` : ''}
           <td>${upload.prettyBytes}</td>
           ${params.all ? `<td>${upload.ip || ''}</td>` : ''}
           <td>${upload.prettyDate}</td>
@@ -796,7 +822,7 @@ page.getUploads = (params = {}) => {
         `
 
         table.appendChild(tr)
-        page.checkboxes[page.currentView] = table.querySelectorAll('.checkbox[data-action="select"]')
+        page.checkboxes = table.querySelectorAll('.checkbox[data-action="select"]')
       }
     }
 
@@ -830,8 +856,13 @@ page.setUploadsView = (view, element) => {
   if (page.isSomethingLoading)
     return page.warnSomethingLoading()
 
-  localStorage[lsKeys.viewType[page.currentView]] = view
-  page.views[page.currentView].type = view
+  if (view === 'list') {
+    delete localStorage[lsKeys.viewType[page.currentView]]
+    page.views[page.currentView].type = undefined
+  } else {
+    localStorage[lsKeys.viewType[page.currentView]] = view
+    page.views[page.currentView].type = view
+  }
 
   // eslint-disable-next-line compat/compat
   page.getUploads(Object.assign(page.views[page.currentView], {
@@ -840,7 +871,7 @@ page.setUploadsView = (view, element) => {
 }
 
 page.displayPreview = id => {
-  const file = page.cache.uploads[id]
+  const file = page.cache[id]
   if (!file.thumb) return
 
   const div = document.createElement('div')
@@ -927,12 +958,12 @@ page.displayPreview = id => {
 }
 
 page.selectAll = element => {
-  for (let i = 0; i < page.checkboxes[page.currentView].length; i++) {
-    const id = page.getItemID(page.checkboxes[page.currentView][i])
+  for (let i = 0; i < page.checkboxes.length; i++) {
+    const id = page.getItemID(page.checkboxes[i])
     if (isNaN(id)) continue
-    if (page.checkboxes[page.currentView][i].checked !== element.checked) {
-      page.checkboxes[page.currentView][i].checked = element.checked
-      if (page.checkboxes[page.currentView][i].checked)
+    if (page.checkboxes[i].checked !== element.checked) {
+      page.checkboxes[i].checked = element.checked
+      if (page.checkboxes[i].checked)
         page.selected[page.currentView].push(id)
       else
         page.selected[page.currentView].splice(page.selected[page.currentView].indexOf(id), 1)
@@ -955,12 +986,12 @@ page.selectInBetween = (element, lastElement) => {
   if (distance < 2)
     return
 
-  for (let i = 0; i < page.checkboxes[page.currentView].length; i++)
+  for (let i = 0; i < page.checkboxes.length; i++)
     if ((thisIndex > lastIndex && i > lastIndex && i < thisIndex) ||
       (thisIndex < lastIndex && i > thisIndex && i < lastIndex)) {
       // Check or uncheck depending on the state of the initial checkbox
-      const checked = page.checkboxes[page.currentView][i].checked = lastElement.checked
-      const id = page.getItemID(page.checkboxes[page.currentView][i])
+      const checked = page.checkboxes[i].checked = lastElement.checked
+      const id = page.getItemID(page.checkboxes[i])
       if (!page.selected[page.currentView].includes(id) && checked)
         page.selected[page.currentView].push(id)
       else if (page.selected[page.currentView].includes(id) && !checked)
@@ -972,13 +1003,12 @@ page.select = (element, event) => {
   const id = page.getItemID(element)
   if (isNaN(id)) return
 
-  const lastSelected = page.lastSelected[page.currentView]
-  if (event.shiftKey && lastSelected) {
-    page.selectInBetween(element, lastSelected)
+  if (event.shiftKey && page.lastSelected) {
+    page.selectInBetween(element, page.lastSelected)
     // Check or uncheck depending on the state of the initial checkbox
-    element.checked = lastSelected.checked
+    element.checked = page.lastSelected.checked
   } else {
-    page.lastSelected[page.currentView] = element
+    page.lastSelected = element
   }
 
   if (!page.selected[page.currentView].includes(id) && element.checked)
@@ -995,7 +1025,7 @@ page.select = (element, event) => {
 
 page.clearSelection = () => {
   const selected = page.selected[page.currentView]
-  const type = page.currentView === 'users' ? 'users' : 'uploads'
+  const type = page.getByView(page.currentView, 'type')
   const count = selected.length
   if (!count)
     return swal('An error occurred!', `You have not selected any ${type}.`, 'error')
@@ -1008,7 +1038,7 @@ page.clearSelection = () => {
   }).then(proceed => {
     if (!proceed) return
 
-    const checkboxes = page.checkboxes[page.currentView]
+    const checkboxes = page.checkboxes
     for (let i = 0; i < checkboxes.length; i++)
       if (checkboxes[i].checked)
         checkboxes[i].checked = false
@@ -1134,7 +1164,7 @@ page.filterUploads = element => {
 }
 
 page.viewUserUploads = (id, element) => {
-  const user = page.cache.users[id]
+  const user = page.cache[id]
   if (!user) return
   element.classList.add('is-loading')
   // Wrap username in quotes if it contains whitespaces
@@ -1145,6 +1175,20 @@ page.viewUserUploads = (id, element) => {
     all: true,
     filters: `user:${username}`,
     trigger: document.querySelector('#itemManageUploads')
+  })
+}
+
+page.viewAlbumUploads = (id, element) => {
+  if (!page.cache[id]) return
+  element.classList.add('is-loading')
+  // eslint-disable-next-line compat/compat
+  const all = page.currentView === 'albumsAll' && page.permissions.moderator
+  page.getUploads({
+    all,
+    filters: `albumid:${id}`,
+    trigger: all
+      ? document.querySelector('#itemManageUploads')
+      : document.querySelector('#itemUploads')
   })
 }
 
@@ -1462,9 +1506,24 @@ page.addUploadsToAlbum = (ids, callback) => {
 }
 
 page.getAlbums = (params = {}) => {
+  if (params && params.all && !page.permissions.moderator)
+    return swal('An error occurred!', 'You cannot do this!', 'error')
+
+  if (page.isSomethingLoading)
+    return page.warnSomethingLoading()
+
   page.updateTrigger(params.trigger, 'loading')
 
-  axios.get('api/albums').then(response => {
+  if (typeof params.pageNum !== 'number')
+    params.pageNum = 0
+
+  const headers = {}
+
+  if (params.all)
+    headers.all = '1'
+
+  const url = `api/albums/${params.pageNum}`
+  axios.get(url, { headers }).then(response => {
     if (!response) return
 
     if (response.data.success === false)
@@ -1475,9 +1534,115 @@ page.getAlbums = (params = {}) => {
         return swal('An error occurred!', response.data.description, 'error')
       }
 
-    page.cache.albums = {}
+    const pages = Math.ceil(response.data.count / 25)
+    const albums = response.data.albums
+    if (params.pageNum && (albums.length === 0))
+      if (params.autoPage) {
+        params.pageNum = pages - 1
+        return page.getAlbums(params)
+      } else {
+        page.updateTrigger(params.trigger)
+        return swal('An error occurred!', `There are no more albums to populate page ${params.pageNum + 1}.`, 'error')
+      }
 
-    page.dom.innerHTML = `
+    page.currentView = params.all ? 'albumsAll' : 'albums'
+    page.cache = {}
+
+    const users = response.data.users
+    const homeDomain = response.data.homeDomain
+
+    if (params.pageNum < 0) params.pageNum = Math.max(0, pages + params.pageNum)
+    const pagination = page.paginate(response.data.count, 25, params.pageNum)
+
+    const filter = `
+      <div class="column">
+        <form class="prevent-default">
+          <div class="field has-addons">
+            <div class="control is-expanded">
+              <input id="filters" class="input is-small" type="text" placeholder="Filter albums (WIP)" value="${page.escape(params.filters || '')}" disabled>
+            </div>
+            <div class="control">
+              <button type="button" class="button is-small is-primary is-outlined" title="Help? (WIP)" data-action="album-filters-help" disabled>
+                <span class="icon">
+                  <i class="icon-help-circled"></i>
+                </span>
+              </button>
+            </div>
+            <div class="control">
+              <button type="submit" class="button is-small is-info is-outlined" title="Filter albums (WIP)" data-action="filter-albums" disabled>
+                <span class="icon">
+                  <i class="icon-filter"></i>
+                </span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    `
+    const extraControls = `
+      <div class="columns">
+        ${filter}
+        <div class="column is-one-quarter">
+          <form class="prevent-default">
+            <div class="field has-addons">
+              <div class="control is-expanded">
+                <input id="jumpToPage" class="input is-small" type="number" min="1" max="${pages}" value="${params.pageNum + 1}"${pages === 1 ? ' disabled' : ''}>
+              </div>
+              <div class="control">
+                <button type="submit" class="button is-small is-info is-outlined" title="Jump to page" data-action="jump-to-page">
+                  <span class="icon">
+                    <i class="icon-paper-plane"></i>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    `
+
+    const controls = `
+      <div class="columns">
+        <div class="column is-hidden-mobile"></div>
+        <div class="column bulk-operations has-text-right">
+          <a class="button is-small is-info is-outlined" title="Clear selection" data-action="clear-selection">
+            <span class="icon">
+              <i class="icon-cancel"></i>
+            </span>
+          </a>
+          <a class="button is-small is-dangerish is-outlined" title="Bulk disable (WIP)" data-action="bulk-disable-albums" disabled>
+            <span class="icon">
+              <i class="icon-trash"></i>
+            </span>
+            ${!params.all ? '<span>Bulk disable</span>' : ''}
+          </a>
+          ${params.all
+            ? `<a class="button is-small is-danger is-outlined" title="Bulk delete (WIP)" data-action="bulk-delete-albums" disabled>
+                <span class="icon">
+                  <i class="icon-trash"></i>
+                </span>
+                <span>Bulk delete</span>
+              </a>`
+            : ''}
+        </div>
+      </div>
+    `
+
+    // Do some string replacements for bottom controls
+    const bottomFiltersId = 'bFilters'
+    const bottomJumpId = 'bJumpToPage'
+    const bottomExtraControls = extraControls
+      .replace(/id="filters"/, `id="${bottomFiltersId}"`)
+      .replace(/(data-action="filter-uploads")/, `$1 data-filtersid="${bottomFiltersId}"`)
+      .replace(/id="jumpToPage"/, `id="${bottomJumpId}"`)
+      .replace(/(data-action="jump-to-page")/g, `$1 data-jumpid="${bottomJumpId}"`)
+    const bottomPagination = pagination
+      .replace(/(data-action="page-ellipsis")/g, `$1 data-jumpid="${bottomJumpId}"`)
+
+    // Whether there are any unselected items
+    let unselected = false
+
+    const createNewAlbum = `
       <h2 class="subtitle">Create new album</h2>
       <form class="prevent-default">
         <div class="field">
@@ -1504,14 +1669,22 @@ page.getAlbums = (params = {}) => {
         </div>
       </form>
       <hr>
-      <h2 class="subtitle">List of albums</h2>
+    `
+
+    page.dom.innerHTML = `
+      ${!params.all ? createNewAlbum : ''}
+      ${pagination}
+      ${extraControls}
+      ${controls}
       <div class="table-container">
         <table class="table is-narrow is-fullwidth is-hoverable">
           <thead>
             <tr>
+              <th><input id="selectAll" class="checkbox" type="checkbox" title="Select all" data-action="select-all"></th>
               <th>ID</th>
               <th>Name</th>
-              <th>Files</th>
+              ${params.all ? '<th>User</th>' : ''}
+              <th>Uploads</th>
               <th>Created at</th>
               <th>Public link</th>
               <th></th>
@@ -1521,36 +1694,52 @@ page.getAlbums = (params = {}) => {
           </tbody>
         </table>
       </div>
+      ${controls}
+      ${bottomExtraControls}
+      ${bottomPagination}
     `
 
-    const homeDomain = response.data.homeDomain
     const table = document.querySelector('#table')
 
-    for (let i = 0; i < response.data.albums.length; i++) {
-      const album = response.data.albums[i]
+    for (let i = 0; i < albums.length; i++) {
+      const album = albums[i]
       const albumUrl = `${homeDomain}/a/${album.identifier}`
+
+      const selected = page.selected[page.currentView].includes(album.id)
+      if (!selected) unselected = true
 
       // Prettify
       album.prettyDate = page.getPrettyDate(new Date(album.timestamp * 1000))
 
-      page.cache.albums[album.id] = {
+      // Server-side explicitly expect this value to consider an album as disabled
+      const enabled = album.enabled !== 0
+      page.cache[album.id] = {
         name: album.name,
         download: album.download,
         public: album.public,
-        description: album.description
+        description: album.description,
+        enabled
       }
 
       const tr = document.createElement('tr')
+      tr.dataset.id = album.id
       tr.innerHTML = `
+        <td class="controls"><input type="checkbox" class="checkbox" title="Select" data-index="${i}" data-action="select"${selected ? ' checked' : ''}></td>
         <th>${album.id}</th>
-        <th>${album.name}</th>
-        <th>${album.files}</th>
+        <th${enabled ? '' : ' class="has-text-grey"'}>${album.name}</td>
+        ${params.all ? `<th>${album.userid ? (users[album.userid] || '') : ''}</th>` : ''}
+        <th>${album.uploads}</th>
         <td>${album.prettyDate}</td>
-        <td><a ${album.public ? `href="${albumUrl}"` : 'class="is-linethrough"'} target="_blank">${albumUrl}</a></td>
+        <td><a ${enabled && album.public ? '' : 'class="is-linethrough" '}href="${albumUrl}" target="_blank">${albumUrl}</a></td>
         <td class="has-text-right" data-id="${album.id}">
           <a class="button is-small is-primary is-outlined" title="Edit album" data-action="edit-album">
             <span class="icon is-small">
               <i class="icon-pencil"></i>
+            </span>
+          </a>
+          <a class="button is-small is-info is-outlined" title="${album.uploads ? 'View uploads' : 'Album doesn\'t have uploads'}" data-action="view-album-uploads" ${album.uploads ? '' : 'disabled'}>
+            <span class="icon">
+              <i class="icon-docs"></i>
             </span>
           </a>
           <a class="button is-small is-info is-outlined clipboard-js" title="Copy link to clipboard" ${album.public ? `data-clipboard-text="${albumUrl}"` : 'disabled'}>
@@ -1558,12 +1747,12 @@ page.getAlbums = (params = {}) => {
               <i class="icon-clipboard"></i>
             </span>
           </a>
-          <a class="button is-small is-warning is-outlined" title="Download album" ${album.download ? `href="api/album/zip/${album.identifier}?v=${album.editedAt}"` : 'disabled'}>
+          <a class="button is-small is-warning is-outlined" title="Download album" ${enabled && album.download ? `href="api/album/zip/${album.identifier}?v=${album.editedAt}"` : 'disabled'}>
             <span class="icon is-small">
               <i class="icon-download"></i>
             </span>
           </a>
-          <a class="button is-small is-danger is-outlined" title="Delete album" data-action="delete-album">
+          <a class="button is-small is-dangerish is-outlined" title="Disable album" data-action="disable-album"${enabled ? '' : ' disabled'}>
             <span class="icon is-small">
               <i class="icon-trash"></i>
             </span>
@@ -1572,9 +1761,21 @@ page.getAlbums = (params = {}) => {
       `
 
       table.appendChild(tr)
+      page.checkboxes = table.querySelectorAll('.checkbox[data-action="select"]')
     }
+
+    const selectAll = document.querySelector('#selectAll')
+    if (selectAll && !unselected) {
+      selectAll.checked = true
+      selectAll.title = 'Unselect all'
+    }
+
     page.fadeAndScroll()
     page.updateTrigger(params.trigger, 'active')
+
+    if (page.currentView === 'albumsAll')
+      page.views[page.currentView].filters = params.filters
+    page.views[page.currentView].pageNum = albums.length ? params.pageNum : 0
   }).catch(error => {
     page.updateTrigger(params.trigger)
     page.onAxiosError(error)
@@ -1582,7 +1783,7 @@ page.getAlbums = (params = {}) => {
 }
 
 page.editAlbum = id => {
-  const album = page.cache.albums[id]
+  const album = page.cache[id]
   if (!album) return
 
   const div = document.createElement('div')
@@ -1599,6 +1800,16 @@ page.editAlbum = id => {
       </div>
       <p class="help">Max length is ${page.albumDescMaxLength} characters.</p>
     </div>
+    ${page.currentView === 'albumsAll' && page.permissions.moderator
+      ? `<div class="field">
+          <div class="control">
+            <label class="checkbox">
+              <input id="swalEnabled" type="checkbox" ${album.enabled ? 'checked' : ''}>
+              Enabled
+            </label>
+          </div>
+        </div>`
+      : ''}
     <div class="field">
       <div class="control">
         <label class="checkbox">
@@ -1638,14 +1849,19 @@ page.editAlbum = id => {
   }).then(value => {
     if (!value) return
 
-    axios.post('api/albums/edit', {
+    const post = {
       id,
       name: document.querySelector('#swalName').value.trim(),
       description: document.querySelector('#swalDescription').value.trim(),
       download: document.querySelector('#swalDownload').checked,
       public: document.querySelector('#swalPublic').checked,
       requestLink: document.querySelector('#swalRequestLink').checked
-    }).then(response => {
+    }
+
+    if (page.currentView === 'albumsAll' && page.permissions.moderator)
+      post.enabled = document.querySelector('#swalEnabled').checked
+
+    axios.post('api/albums/edit', post).then(response => {
       if (!response) return
 
       if (response.data.success === false)
@@ -1656,35 +1872,39 @@ page.editAlbum = id => {
         }
 
       if (response.data.identifier)
-        swal('Success!', `Your album's new identifier is: ${response.data.identifier}.`, 'success')
+        swal('Success!', `The album's new identifier is: ${response.data.identifier}.`, 'success')
       else if (response.data.name !== album.name)
-        swal('Success!', `Your album was renamed to: ${response.data.name}.`, 'success')
+        swal('Success!', `The album was renamed to: ${response.data.name}.`, 'success')
       else
-        swal('Success!', 'Your album was edited!', 'success', {
+        swal('Success!', 'The album was edited.', 'success', {
           buttons: false,
           timer: 1500
         })
 
       page.getAlbumsSidebar()
-      page.getAlbums()
+      // Reload albums list
+      // eslint-disable-next-line compat/compat
+      page.getAlbums(Object.assign(page.views[page.currentView], {
+        autoPage: true
+      }))
     }).catch(page.onAxiosError)
   })
 }
 
-page.deleteAlbum = id => {
+page.disableAlbum = id => {
   swal({
     title: 'Are you sure?',
-    text: 'This won\'t delete your uploads, only the album!',
+    text: 'This won\'t delete the uploads associated with the album!',
     icon: 'warning',
     dangerMode: true,
     buttons: {
       cancel: true,
       confirm: {
-        text: 'Yes, delete it!',
+        text: 'Yes, disable it!',
         closeModal: false
       },
       purge: {
-        text: 'Umm, delete the uploads too please?',
+        text: 'Umm, delete the uploads too, please?',
         value: 'purge',
         className: 'swal-button--danger',
         closeModal: false
@@ -1693,7 +1913,7 @@ page.deleteAlbum = id => {
   }).then(proceed => {
     if (!proceed) return
 
-    axios.post('api/albums/delete', {
+    axios.post('api/albums/disable', {
       id,
       purge: proceed === 'purge'
     }).then(response => {
@@ -1710,12 +1930,17 @@ page.deleteAlbum = id => {
           return swal('An error occurred!', response.data.description, 'error')
       }
 
-      swal('Deleted!', 'Your album has been deleted.', 'success', {
+      swal('Deleted!', 'Your album has been disabled.', 'success', {
         buttons: false,
         timer: 1500
       })
+
       page.getAlbumsSidebar()
-      page.getAlbums()
+      // Reload albums list
+      // eslint-disable-next-line compat/compat
+      page.getAlbums(Object.assign(page.views[page.currentView], {
+        autoPage: true
+      }))
     }).catch(page.onAxiosError)
   })
 }
@@ -1742,7 +1967,9 @@ page.submitAlbum = element => {
       timer: 1500
     })
     page.getAlbumsSidebar()
-    page.getAlbums()
+    page.getAlbums({
+      pageNum: -1
+    })
   }).catch(error => {
     page.updateTrigger(element)
     page.onAxiosError(error)
@@ -1750,7 +1977,7 @@ page.submitAlbum = element => {
 }
 
 page.getAlbumsSidebar = () => {
-  axios.get('api/albums/sidebar').then(response => {
+  axios.get('api/albums', { headers: { sidebar: '1' } }).then(response => {
     if (!response) return
 
     if (response.data.success === false)
@@ -1760,6 +1987,8 @@ page.getAlbumsSidebar = () => {
         return swal('An error occurred!', response.data.description, 'error')
       }
 
+    const albums = response.data.albums
+    const count = response.data.count
     const albumsContainer = document.querySelector('#albumsContainer')
 
     // Clear albums sidebar if necessary
@@ -1770,16 +1999,16 @@ page.getAlbumsSidebar = () => {
       albumsContainer.innerHTML = ''
     }
 
-    if (response.data.albums === undefined)
+    if (albums === undefined)
       return
 
-    for (let i = 0; i < response.data.albums.length; i++) {
-      const album = response.data.albums[i]
+    for (let i = 0; i < albums.length; i++) {
+      const album = albums[i]
       const li = document.createElement('li')
       const a = document.createElement('a')
       a.id = album.id
-      a.innerHTML = album.name
       a.className = 'is-relative'
+      a.innerHTML = album.name
 
       a.addEventListener('click', event => {
         page.getUploads({
@@ -1788,6 +2017,23 @@ page.getAlbumsSidebar = () => {
         })
       })
       page.menus.push(a)
+
+      li.appendChild(a)
+      albumsContainer.appendChild(li)
+    }
+
+    if (count > albums.length) {
+      const li = document.createElement('li')
+      const a = document.createElement('a')
+      a.className = 'is-relative'
+      a.innerHTML = '...'
+      a.title = `You have ${count} albums, but the sidebar can only list your first ${albums.length} albums.`
+
+      a.addEventListener('click', event => {
+        page.getAlbums({
+          trigger: document.querySelector('#itemManageYourAlbums')
+        })
+      })
 
       li.appendChild(a)
       albumsContainer.appendChild(li)
@@ -1939,7 +2185,7 @@ page.getUsers = (params = {}) => {
 
   page.updateTrigger(params.trigger, 'loading')
 
-  if (params.pageNum === undefined)
+  if (typeof params.pageNum !== 'number')
     params.pageNum = 0
 
   const url = `api/users/${params.pageNum}`
@@ -1953,7 +2199,8 @@ page.getUsers = (params = {}) => {
       }
 
     const pages = Math.ceil(response.data.count / 25)
-    if (params.pageNum && (response.data.users.length === 0))
+    const users = response.data.users
+    if (params.pageNum && (users.length === 0))
       if (params.autoPage) {
         params.pageNum = pages - 1
         return page.getUsers(params)
@@ -1963,7 +2210,7 @@ page.getUsers = (params = {}) => {
       }
 
     page.currentView = 'users'
-    page.cache.users = {}
+    page.cache = {}
 
     if (params.pageNum < 0) params.pageNum = Math.max(0, pages + params.pageNum)
     const pagination = page.paginate(response.data.count, 25, params.pageNum)
@@ -1973,7 +2220,7 @@ page.getUsers = (params = {}) => {
         <form class="prevent-default">
           <div class="field has-addons">
             <div class="control is-expanded">
-              <input id="filters" class="input is-small" type="text" placeholder="Filters (WIP)" value="${page.escape(params.filters || '')}" disabled>
+              <input id="filters" class="input is-small" type="text" placeholder="Filter users (WIP)" value="${page.escape(params.filters || '')}" disabled>
             </div>
             <div class="control">
               <button type="button" class="button is-small is-primary is-outlined" title="Help? (WIP)" data-action="user-filters-help" disabled>
@@ -2031,7 +2278,7 @@ page.getUsers = (params = {}) => {
               <i class="icon-cancel"></i>
             </span>
           </a>
-          <a class="button is-small is-warning is-outlined" title="Bulk disable (WIP)" data-action="bulk-disable-users" disabled>
+          <a class="button is-small is-dangerish is-outlined" title="Bulk disable (WIP)" data-action="bulk-disable-users" disabled>
             <span class="icon">
               <i class="icon-hammer"></i>
             </span>
@@ -2089,9 +2336,9 @@ page.getUsers = (params = {}) => {
 
     const table = document.querySelector('#table')
 
-    for (let i = 0; i < response.data.users.length; i++) {
-      const user = response.data.users[i]
-      const selected = page.selected.users.includes(user.id)
+    for (let i = 0; i < users.length; i++) {
+      const user = users[i]
+      const selected = page.selected[page.currentView].includes(user.id)
       if (!selected) unselected = true
 
       let displayGroup = null
@@ -2103,7 +2350,7 @@ page.getUsers = (params = {}) => {
 
       // Server-side explicitly expects either of these two values to consider a user as disabled
       const enabled = user.enabled !== false && user.enabled !== 0
-      page.cache.users[user.id] = {
+      page.cache[user.id] = {
         username: user.username,
         groups: user.groups,
         enabled,
@@ -2121,7 +2368,7 @@ page.getUsers = (params = {}) => {
       tr.dataset.id = user.id
       tr.innerHTML = `
         <td class="controls"><input type="checkbox" class="checkbox" title="Select" data-index="${i}" data-action="select"${selected ? ' checked' : ''}></td>
-        <th${enabled ? '' : ' class="is-linethrough"'}>${user.username}</td>
+        <th${enabled ? '' : ' class="has-text-grey"'}>${user.username}</td>
         <th>${user.uploads}</th>
         <td>${page.getPrettyBytes(user.usage)}</td>
         <td>${displayGroup}</td>
@@ -2138,7 +2385,7 @@ page.getUsers = (params = {}) => {
               <i class="icon-docs"></i>
             </span>
           </a>
-          <a class="button is-small is-warning is-outlined" title="${enabled ? 'Disable user' : 'User is disabled'}" data-action="disable-user" ${enabled ? '' : 'disabled'}>
+          <a class="button is-small is-dangerish is-outlined" title="${enabled ? 'Disable user' : 'User is disabled'}" data-action="disable-user" ${enabled ? '' : 'disabled'}>
             <span class="icon">
               <i class="icon-hammer"></i>
             </span>
@@ -2152,7 +2399,7 @@ page.getUsers = (params = {}) => {
       `
 
       table.appendChild(tr)
-      page.checkboxes.users = table.querySelectorAll('.checkbox[data-action="select"]')
+      page.checkboxes = table.querySelectorAll('.checkbox[data-action="select"]')
     }
 
     const selectAll = document.querySelector('#selectAll')
@@ -2164,7 +2411,7 @@ page.getUsers = (params = {}) => {
     page.fadeAndScroll()
     page.updateTrigger(params.trigger, 'active')
 
-    page.views.users.pageNum = response.data.users.length ? params.pageNum : 0
+    page.views[page.currentView].pageNum = users.length ? params.pageNum : 0
   }).catch(error => {
     page.updateTrigger(params.trigger)
     page.onAxiosError(error)
@@ -2252,7 +2499,7 @@ page.createUser = () => {
 }
 
 page.editUser = id => {
-  const user = page.cache.users[id]
+  const user = page.cache[id]
   if (!user) return
 
   const groupOptions = Object.keys(page.permissions).map((g, i, a) => {
@@ -2366,12 +2613,12 @@ page.editUser = id => {
 }
 
 page.disableUser = id => {
-  const user = page.cache.users[id]
+  const user = page.cache[id]
   if (!user || !user.enabled) return
 
   const content = document.createElement('div')
   content.innerHTML = `
-    <p>You will be disabling a user named <b>${page.cache.users[id].username}</b>.</p>
+    <p>You will be disabling a user named <b>${page.cache[id].username}</b>.</p>
     <p>Their files will remain.</p>
   `
 
@@ -2399,7 +2646,7 @@ page.disableUser = id => {
         else
           return swal('An error occurred!', response.data.description, 'error')
 
-      swal('Success!', `${page.cache.users[id].username} has been disabled.`, 'success', {
+      swal('Success!', `${page.cache[id].username} has been disabled.`, 'success', {
         buttons: false,
         timer: 1500
       })
@@ -2409,12 +2656,12 @@ page.disableUser = id => {
 }
 
 page.deleteUser = id => {
-  const user = page.cache.users[id]
+  const user = page.cache[id]
   if (!user) return
 
   const content = document.createElement('div')
   content.innerHTML = `
-    <p>You will be deleting a user named <b>${page.cache.users[id].username}</b>.<p>
+    <p>You will be deleting a user named <b>${page.cache[id].username}</b>.<p>
     <p>Their files will remain, unless you choose otherwise.</p>
   `
 
@@ -2458,7 +2705,7 @@ page.deleteUser = id => {
           return swal('An error occurred!', response.data.description, 'error')
       }
 
-      swal('Success!', `${page.cache.users[id].username} has been deleted.`, 'success', {
+      swal('Success!', `${page.cache[id].username} has been deleted.`, 'success', {
         buttons: false,
         timer: 1500
       })
@@ -2647,7 +2894,7 @@ window.onload = () => {
   if (!('ontouchstart' in document.documentElement))
     document.documentElement.classList.add('no-touch')
 
-  const selectedKeys = ['uploads', 'uploadsAll', 'users']
+  const selectedKeys = ['uploads', 'uploadsAll', 'albums', 'albumsAll', 'users']
   for (let i = 0; i < selectedKeys.length; i++) {
     const ls = localStorage[lsKeys.selected[selectedKeys[i]]]
     if (ls) page.selected[selectedKeys[i]] = JSON.parse(ls)
