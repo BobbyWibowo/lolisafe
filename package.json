@@ -53,7 +53,7 @@
     "systeminformation": "~4.26.9"
   },
   "devDependencies": {
-    "browserslist": "~4.12.0",
+    "browserslist": "~4.12.1",
     "cssnano": "~4.1.10",
     "del": "~5.1.0",
     "eslint": "~6.8.0",
