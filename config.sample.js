@@ -501,6 +501,7 @@ module.exports = {
       fill your API key, email and your site's zone ID below, then set "purgeCache" to true.
       This will only purge cache of the deleted file and its associated thumb.
     */
+    apiToken: '',
     apiKey: '',
     email: '',
     zoneId: '',

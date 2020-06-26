@@ -64,7 +64,7 @@ const statsCache = {
   }
 }
 
-const cloudflareAuth = config.cloudflare && config.cloudflare.apiKey &&
+const cloudflareAuth = config.cloudflare && config.cloudflare.apiToken && config.cloudflare.apiKey &&
   config.cloudflare.email && config.cloudflare.zoneId
 
 self.mayGenerateThumb = extname => {
@@ -525,6 +525,7 @@ self.purgeCloudflareCache = async (names, uploads, thumbs) => {
         method: 'POST',
         body: JSON.stringify({ files: chunk }),
         headers: {
+          'Authorization: Bearer': config.cloudflare.apiToken,
           'Content-Type': 'application/json',
           'X-Auth-Email': config.cloudflare.email,
           'X-Auth-Key': config.cloudflare.apiKey
