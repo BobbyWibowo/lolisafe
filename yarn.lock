@@ -7417,10 +7417,10 @@ svgo@^1.0.0:
     unquote "~1.1.1"
     util.promisify "~1.0.0"
 
-systeminformation@~4.26.11:
-  version "4.26.12"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.26.12.tgz#0c6d2c47832b42874dfd5d470d702d7fb5931fa6"
-  integrity sha512-rO39KsLPxK1UY/s3cgBZz8KUDN7dDgahcgFT2AJaKedo6uKgYHQPdgvhehqNsG+sGBHMUmBwtRUJWgyquEoBHw==
+systeminformation@~4.27.1:
+  version "4.27.1"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.27.1.tgz#a8d1b480ca0cbf4a0690a72a43f41083bcf2695c"
+  integrity sha512-l321lB8PDyuAmLRALsjq11gLIXUepz2pDNaQoqYtd04g0pu/arw4aAQ0T05IgRSmZLHYq5jd6WmmpIBs1EO5AQ==
 
 table@^5.2.3, table@^5.4.6:
   version "5.4.6"
