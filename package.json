@@ -50,7 +50,7 @@
     "readline": "~1.3.0",
     "search-query-parser": "~1.5.5",
     "serve-static": "git+https://git@github.com/BobbyWibowo/serve-static#60049dec396615ab738d29576a65432e4f9d7d4a",
-    "sharp": "~0.26.0",
+    "sharp": "~0.26.1",
     "sqlite3": "~5.0.0",
     "systeminformation": "~4.27.3"
   },
