@@ -84,6 +84,6 @@
     "stylelint-config-standard": "~20.0.0"
   },
   "resolutions": {
-    "sqlite3/node-addon-api": "2.0.1"
+    "sqlite3/node-addon-api": "2.0.2"
   }
 }
