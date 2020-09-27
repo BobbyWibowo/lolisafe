@@ -79,7 +79,7 @@
     "gulp-stylelint": "~13.0.0",
     "gulp-terser": "~1.4.0",
     "node-sass": "~4.14.1",
-    "postcss": "~8.0.9",
+    "postcss": "~8.1.0",
     "postcss-preset-env": "~6.7.0",
     "stylelint": "~13.7.2",
     "stylelint-config-standard": "~20.0.0"
