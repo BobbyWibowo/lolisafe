@@ -6799,6 +6799,25 @@ send@0.17.1:
     range-parser "~1.2.1"
     statuses "~1.5.0"
 
+"send@git+https://git@github.com/BobbyWibowo/send#12954661e56df4f7760d4bdee284b69911d0338d":
+  version "0.17.2"
+  uid "12954661e56df4f7760d4bdee284b69911d0338d"
+  resolved "git+https://git@github.com/BobbyWibowo/send#12954661e56df4f7760d4bdee284b69911d0338d"
+  dependencies:
+    debug "2.6.9"
+    depd "~1.1.2"
+    destroy "~1.0.4"
+    encodeurl "~1.0.2"
+    escape-html "~1.0.3"
+    etag "~1.8.1"
+    fresh "0.5.2"
+    http-errors "~1.7.2"
+    mime "1.6.0"
+    ms "2.1.1"
+    on-finished "~2.3.0"
+    range-parser "~1.2.1"
+    statuses "~1.5.0"
+
 serve-static@1.14.1:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/serve-static/-/serve-static-1.14.1.tgz#666e636dc4f010f7ef29970a88a674320898b2f9"
@@ -6809,14 +6828,15 @@ serve-static@1.14.1:
     parseurl "~1.3.3"
     send "0.17.1"
 
-"serve-static@git+https://git@github.com/BobbyWibowo/serve-static#60049dec396615ab738d29576a65432e4f9d7d4a":
+"serve-static@git+https://git@github.com/BobbyWibowo/serve-static#02c26587b25a7156a89dc05b617fce0aa90cefb9":
   version "1.14.2"
-  resolved "git+https://git@github.com/BobbyWibowo/serve-static#60049dec396615ab738d29576a65432e4f9d7d4a"
+  uid "02c26587b25a7156a89dc05b617fce0aa90cefb9"
+  resolved "git+https://git@github.com/BobbyWibowo/serve-static#02c26587b25a7156a89dc05b617fce0aa90cefb9"
   dependencies:
     encodeurl "~1.0.2"
     escape-html "~1.0.3"
     parseurl "~1.3.3"
-    send "0.17.1"
+    send "git+https://git@github.com/BobbyWibowo/send#12954661e56df4f7760d4bdee284b69911d0338d"
 
 set-blocking@^2.0.0, set-blocking@~2.0.0:
   version "2.0.0"
@@ -7422,10 +7442,10 @@ svgo@^1.0.0:
     unquote "~1.1.1"
     util.promisify "~1.0.0"
 
-systeminformation@~4.27.5:
-  version "4.27.5"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.27.5.tgz#af304fbfd0e7ba51c87512333691b58b4ad90e43"
-  integrity sha512-EysogxKqREk54ZYDEFcsCODv8GymKZcyiSfegYit8dKhPjzuQr+KX4GFHjssWjYrWFEIM2bYNsFrZX5eufeAXg==
+systeminformation@~4.27.6:
+  version "4.27.6"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.27.6.tgz#7b5fd3b9f7c23a6a144538dd3c7c6eb1c7072684"
+  integrity sha512-uFs6VAt/hhsBqb+2i9oH+tXm/uCP6e6lw4olfor5s5OkkZxYqisGvtSNXsLnSe27anF+tzyXte764MNJqXU9eg==
 
 table@^5.2.3:
   version "5.4.6"
