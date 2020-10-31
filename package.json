@@ -42,7 +42,7 @@
     "fluent-ffmpeg": "~2.1.2",
     "helmet": "~4.1.1",
     "jszip": "~3.5.0",
-    "knex": "~0.21.9",
+    "knex": "~0.21.10",
     "multer": "~1.4.2",
     "node-fetch": "~2.6.1",
     "nunjucks": "~3.2.2",

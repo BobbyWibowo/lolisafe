@@ -4104,10 +4104,10 @@ kind-of@^6.0.0, kind-of@^6.0.2, kind-of@^6.0.3:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
 
-knex@~0.21.9:
-  version "0.21.9"
-  resolved "https://registry.yarnpkg.com/knex/-/knex-0.21.9.tgz#f6a140188c902a2df539b7a9429c0ce52e55efa3"
-  integrity sha512-6XhR2IbeB7Hx8uaM2J4W+W85/ZRRuP3zzSsdOVBoJdZMV73/WxZscw/qnB1dEPCYXlIx/fRI9FsrzqGaz/KVpA==
+knex@~0.21.10:
+  version "0.21.10"
+  resolved "https://registry.yarnpkg.com/knex/-/knex-0.21.10.tgz#ffa91d9b253508bafd4dd13321c3e4eba2238c61"
+  integrity sha512-Z231ByBdvlDuMPOmuhxyKxnl4kif4/T/umixckLh7tG9ynyVTyp2/32ebkYsEvS3iSPhfl30Q5wDSzzlCbTHGQ==
   dependencies:
     colorette "1.2.1"
     commander "^5.1.0"
@@ -4120,7 +4120,6 @@ knex@~0.21.9:
     pg-connection-string "2.3.0"
     tarn "^3.0.1"
     tildify "2.0.0"
-    uuid "^7.0.3"
     v8flags "^3.2.0"
 
 known-css-properties@^0.19.0:
@@ -7917,11 +7916,6 @@ uuid@^3.3.2:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
-
-uuid@^7.0.3:
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-7.0.3.tgz#c5c9f2c8cf25dc0a372c4df1441c41f5bd0c680b"
-  integrity sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==
 
 v8-compile-cache@^2.0.3, v8-compile-cache@^2.1.1:
   version "2.2.0"
