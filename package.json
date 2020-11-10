@@ -55,7 +55,7 @@
     "systeminformation": "~4.29.3"
   },
   "devDependencies": {
-    "browserslist": "~4.14.6",
+    "browserslist": "~4.14.7",
     "bulma": "~0.9.1",
     "cssnano": "~4.1.10",
     "del": "~6.0.0",
