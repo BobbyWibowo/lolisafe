@@ -76,7 +76,7 @@
     "gulp-sass": "~4.1.0",
     "gulp-sourcemaps": "~3.0.0",
     "gulp-stylelint": "~13.0.0",
-    "gulp-terser": "~1.4.1",
+    "gulp-terser": "~2.0.0",
     "node-sass": "~4.14.1",
     "postcss": "~8.1.7",
     "postcss-preset-env": "~6.7.0",

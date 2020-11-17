@@ -3251,14 +3251,13 @@ gulp-stylelint@~13.0.0:
     strip-ansi "^6.0.0"
     through2 "^3.0.1"
 
-gulp-terser@~1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/gulp-terser/-/gulp-terser-1.4.1.tgz#06b30023889b149bdbbdd49fada31b233fe737df"
-  integrity sha512-VUoKrk24G0ojr7fXqlZ7vA8qDFHRloYAM6doNRyKdJ/LFkj+X3P04f+7LlOp7j05WtdOCEg65oG6nGjSf//78A==
+gulp-terser@~2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/gulp-terser/-/gulp-terser-2.0.0.tgz#07f95ef9121fe9d4970c3c4ee775c9cd658d0474"
+  integrity sha512-8KxzgUpNeLsSujUCrNKUiSI1ioO5TfW4ODhbM+wzNTWgYp7yCIl1c/5EeOI+SOXaNLi+BzzMqrbb0eYMIThFCQ==
   dependencies:
-    is-promise "^4.0.0"
     plugin-error "^1.0.1"
-    terser ">=4"
+    terser "5.4.0"
     through2 "^4.0.2"
     vinyl-sourcemaps-apply "^0.2.1"
 
@@ -3897,11 +3896,6 @@ is-promise@^2.1:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/is-promise/-/is-promise-2.2.2.tgz#39ab959ccbf9a774cf079f7b40c7a26f763135f1"
   integrity sha512-+lP4/6lKUBfQjZ2pdxThZvLUAafmZb8OAxFb8XXtiQmS35INgr85hdOGoEs124ez1FCnZJt6jau/T+alh58QFQ==
-
-is-promise@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/is-promise/-/is-promise-4.0.0.tgz#42ff9f84206c1991d26debf520dd5c01042dd2f3"
-  integrity sha512-hvpoI6korhJMnej285dSg6nu1+e6uxs7zG3BYAm5byqDsgJNWwxzM6z6iZiAgQR4TJ30JmBTOwqZUw3WlyH3AQ==
 
 is-regex@^1.1.1:
   version "1.1.1"
@@ -7515,10 +7509,10 @@ ternary-stream@^3.0.0:
     merge-stream "^2.0.0"
     through2 "^3.0.1"
 
-terser@>=4:
-  version "5.3.8"
-  resolved "https://registry.yarnpkg.com/terser/-/terser-5.3.8.tgz#991ae8ba21a3d990579b54aa9af11586197a75dd"
-  integrity sha512-zVotuHoIfnYjtlurOouTazciEfL7V38QMAOhGqpXDEg6yT13cF4+fEP9b0rrCEQTn+tT46uxgFsTZzhygk+CzQ==
+terser@5.4.0:
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/terser/-/terser-5.4.0.tgz#9815c0839072d5c894e22c6fc508fbe9f5e7d7e8"
+  integrity sha512-3dZunFLbCJis9TAF2VnX+VrQLctRUmt1p3W2kCsJuZE4ZgWqh//+1MZ62EanewrqKoUf4zIaDGZAvml4UDc0OQ==
   dependencies:
     commander "^2.20.0"
     source-map "~0.7.2"
