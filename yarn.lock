@@ -7201,10 +7201,10 @@ svgo@^1.0.0:
     unquote "~1.1.1"
     util.promisify "~1.0.0"
 
-systeminformation@~4.31.0:
-  version "4.31.0"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.31.0.tgz#24da1f4ba904de8ac66e71be656fef0a234e1d72"
-  integrity sha512-j1eNsuHxpW00RpxSvLy2IJHXpH54TyzZGQRTSFM5flD+dl83qmZ7TWIPnVkACMgHFABkL95I4KTf6S7aRsGUWg==
+systeminformation@~4.31.2:
+  version "4.31.2"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.31.2.tgz#d5513f81784007b6c558b0d525d216f680b0e304"
+  integrity sha512-P2jOzz+Zz4tSbXbf6Qfw7D218Up5Aoj7Lw6bYLmmbpLS47uExArmIe14mRynBhqZuKb4Bg4CsP+y7EVJyIfZJw==
 
 table@^5.2.3:
   version "5.4.6"
