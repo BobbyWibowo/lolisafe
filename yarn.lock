@@ -7094,10 +7094,10 @@ svgo@^1.0.0:
     unquote "~1.1.1"
     util.promisify "~1.0.0"
 
-systeminformation@~4.34.5:
-  version "4.34.5"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.34.5.tgz#f2520697085736d9c3edf58ee9230c6aee1130f3"
-  integrity sha512-oFgpUeGc2BVTl9FPsdixzfcHkMg1llGUeA+flsZf7AM9HTQhWfcVrfHJEoWCq+mOqiSp4SCNrdSPFXJKYPDdYg==
+systeminformation@~4.34.9:
+  version "4.34.9"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-4.34.9.tgz#70412e71ed755881930c0a7bbd831a905a7a362d"
+  integrity sha512-jvc4DlJeXazsen2riPDR97GSaHNCmoL+mgfB8IXxmpNpNd7kv5MfkuihXEmF1/prBFtqzUA2lxnt1qp4maOMQA==
 
 table@^6.0.3, table@^6.0.4:
   version "6.0.7"
