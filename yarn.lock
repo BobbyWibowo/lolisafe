@@ -7166,10 +7166,10 @@ svgo@^1.0.0:
     unquote "~1.1.1"
     util.promisify "~1.0.0"
 
-systeminformation@~5.0.4:
-  version "5.0.4"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-5.0.4.tgz#3e6daf8bc6d1606648e32feed725e09a46b66a25"
-  integrity sha512-jbjHb0gm8Gi6AgOFDI7imbq6kOoRA9xI8984dS9nL29qGJf1Npg3pI4dkaLK5YCi158yeJZgYs7VqWpmxnP8nQ==
+systeminformation@~5.0.7:
+  version "5.0.7"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-5.0.7.tgz#2ba037a53784d2cf103699752bb64a42be60a8a4"
+  integrity sha512-gRccqCFyHUNme9wD7I5O9J4acI53+ejrJCYTujRFUdk+C2lDt13QCK2m4qSDkKD6JN7Wa0FO9yZQwiNn3Qnoow==
 
 table@^6.0.4, table@^6.0.7:
   version "6.0.7"
