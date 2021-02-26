@@ -33,7 +33,7 @@
     "full-upgrade": "rm -f ./yarn.lock && yarn"
   },
   "dependencies": {
-    "bcrypt": "~5.0.0",
+    "bcrypt": "~5.0.1",
     "blake3": "~2.1.4",
     "body-parser": "~1.19.0",
     "clamscan": "^1.3.3",
