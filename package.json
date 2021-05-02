@@ -41,7 +41,7 @@
     "express": "~4.17.1",
     "express-rate-limit": "~5.2.6",
     "fluent-ffmpeg": "~2.1.2",
-    "helmet": "~4.4.1",
+    "helmet": "~4.6.0",
     "jszip": "~3.6.0",
     "knex": "~0.21.19",
     "multer": "~1.4.2",
