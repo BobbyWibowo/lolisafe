@@ -1227,10 +1227,10 @@ ci-info@^2.0.0:
   resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-2.0.0.tgz#67a9e964be31a51e15e5010d58e6f12834002f46"
   integrity sha512-5tK7EtrZ0N+OLFMthtqOj4fI2Jeb88C4CAZPu25LDVUgXJ0A3Js4PMGqrn0JU1W0Mh1/Z8wZzYPxqUrXeBboCQ==
 
-clamscan@^1.3.3:
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/clamscan/-/clamscan-1.3.3.tgz#0cf84dc3278cf7a3c81101d3e647842c34c1a825"
-  integrity sha512-AwaZeyECbqTWwrc5l7lLbA/cbYBTMW+VC77CnIjK3WCwTm1kGL6PHSXgDaEFsVkfrcRvPvSD1oxJpMzET9lqKg==
+clamscan@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/clamscan/-/clamscan-1.4.2.tgz#c3c7762be5897fc24777bfe263aa50c722696118"
+  integrity sha512-y8JrIVGlGlm2q99ic8dwxcRHSUA9kwCR4P2Xdkyn0DGJl5BGw5m0KX5RUtJ+hIZqtp8ERw1jxSQZJlePgPVt0A==
 
 class-utils@^0.3.5:
   version "0.3.6"
