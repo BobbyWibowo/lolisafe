@@ -75,7 +75,7 @@
     "gulp-if": "~3.0.0",
     "gulp-nodemon": "~2.5.0",
     "gulp-postcss": "~9.0.0",
-    "gulp-replace": "~1.0.0",
+    "gulp-replace": "~1.1.3",
     "gulp-sourcemaps": "~3.0.0",
     "gulp-stylelint": "~13.0.0",
     "gulp-terser": "~2.0.1",
