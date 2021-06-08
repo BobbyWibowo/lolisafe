@@ -6603,10 +6603,10 @@ sax@^1.2.4, sax@~1.2.4:
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
   integrity sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw==
 
-search-query-parser@~1.5.5:
-  version "1.5.5"
-  resolved "https://registry.yarnpkg.com/search-query-parser/-/search-query-parser-1.5.5.tgz#dfd829f4fb567a9a3a5b70327576dff4d5be071d"
-  integrity sha512-8hKmRbHShAc+LJtUu7mu4L/oWVgICG1GCzWZtlR11Vl3T/v4aTGv+Ie2bPg+8ueJn+l8zMHCQhzrBNMoV/t2qw==
+search-query-parser@~1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/search-query-parser/-/search-query-parser-1.6.0.tgz#d69ade33f3685cae25613a70189b7b18970b46f1"
+  integrity sha512-bhf+phLlKF38nuniwLcVHWPArHGdzenlPhPi955CR3vm1QQifXIuPHwAffhjapojdVVzmv4hgIJ6NOX1d/w+Uw==
 
 semver-diff@^3.1.1:
   version "3.1.1"
