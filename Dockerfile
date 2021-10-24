@@ -1,4 +1,5 @@
-FROM node:lts-alpine
+#Build from Debian/Ubuntu source, but its more stable.
+FROM node:latest
 
 LABEL name "lolisafe-bobbywibowo"
 LABEL version "3.0.0"
@@ -8,12 +9,11 @@ WORKDIR /usr/src/lolisafe
 
 COPY package.json yarn.lock ./
 
-RUN apk --no-cache update \
-&& apk add --no-cache --virtual build-dependencies python make g++ \
-&& apk add --no-cache ffmpeg \
-&& apk del build-dependencies \
-&& yarn install --production \
-&& yarn cache clean
+RUN apt update
+RUN apt install -y python python3 make g++ git ffmpeg
+RUN yarn install --production
+RUN yarn cache clean
+RUN apt clean
 
 ADD config.sample.js config.js
 
@@ -21,4 +21,5 @@ COPY . .
 
 EXPOSE 9999
 
-CMD ["node", "lolisafe.js"]
+#First migrate then start the Safe. Why? When you auto-Deploy the container, its easier to update.
+CMD ["/bin/bash", "start.sh"]
