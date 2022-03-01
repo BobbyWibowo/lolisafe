@@ -53,7 +53,7 @@
     "serve-static": "git+https://git@github.com/BobbyWibowo/serve-static#02c26587b25a7156a89dc05b617fce0aa90cefb9",
     "sharp": "~0.28.3",
     "sqlite3": "~5.0.2",
-    "systeminformation": "~5.8.7"
+    "systeminformation": "~5.11.6"
   },
   "devDependencies": {
     "browserslist": "~4.17.0",
