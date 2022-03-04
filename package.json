@@ -39,7 +39,7 @@
     "blake3": "~2.1.7",
     "body-parser": "~1.19.0",
     "clamscan": "~1.4.2",
-    "content-disposition": "~0.5.3",
+    "content-disposition": "~0.5.4",
     "express": "~4.17.1",
     "express-rate-limit": "~5.5.1",
     "fluent-ffmpeg": "~2.1.2",
