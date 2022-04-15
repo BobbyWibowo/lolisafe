@@ -37,7 +37,7 @@
     "@bobbywibowo/serve-static": "git+https://git@github.com/BobbyWibowo/serve-static#2cd43e81a9cb79aaa23286d0f63642de96368750",
     "bcrypt": "~5.0.1",
     "blake3": "~2.1.7",
-    "body-parser": "~1.19.2",
+    "body-parser": "~1.20.0",
     "clamscan": "~2.1.2",
     "content-disposition": "~0.5.4",
     "express": "~4.17.3",
