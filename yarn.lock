@@ -1144,10 +1144,10 @@ ci-info@^2.0.0:
   resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-2.0.0.tgz#67a9e964be31a51e15e5010d58e6f12834002f46"
   integrity sha512-5tK7EtrZ0N+OLFMthtqOj4fI2Jeb88C4CAZPu25LDVUgXJ0A3Js4PMGqrn0JU1W0Mh1/Z8wZzYPxqUrXeBboCQ==
 
-clamscan@~1.4.2:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/clamscan/-/clamscan-1.4.2.tgz#c3c7762be5897fc24777bfe263aa50c722696118"
-  integrity sha512-y8JrIVGlGlm2q99ic8dwxcRHSUA9kwCR4P2Xdkyn0DGJl5BGw5m0KX5RUtJ+hIZqtp8ERw1jxSQZJlePgPVt0A==
+clamscan@~2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/clamscan/-/clamscan-2.1.2.tgz#ed58ef77b9095e3b28a3e7855b2c2acf6a2088ef"
+  integrity sha512-pcovgLHcrg3l/mI51Kuk0kN++07pSZdBTskISw0UFvsm8UXda8oNCm0eLeODxFg85Mz+k+TtSS9+XPlriJ8/Fg==
 
 class-utils@^0.3.5:
   version "0.3.6"
