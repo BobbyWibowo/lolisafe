@@ -10,7 +10,7 @@
     "url": "https://github.com/BobbyWibowo/lolisafe/issues"
   },
   "engines": {
-    "node": ">=12.22.0"
+    "node": ">=v16.14.2"
   },
   "license": "MIT",
   "scripts": {
