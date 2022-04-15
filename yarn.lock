@@ -5261,7 +5261,7 @@ postcss-place@^7.0.4:
   dependencies:
     postcss-value-parser "^4.2.0"
 
-postcss-preset-env@~7.4.2:
+postcss-preset-env@~7.4.3:
   version "7.4.3"
   resolved "https://registry.yarnpkg.com/postcss-preset-env/-/postcss-preset-env-7.4.3.tgz#fb1c8b4cb405da042da0ddb8c5eda7842c08a449"
   integrity sha512-dlPA65g9KuGv7YsmGyCKtFkZKCPLkoVMUE3omOl6yM+qrynVHxFvf0tMuippIrXB/sB/MyhL1FgTIbrO+qMERg==
