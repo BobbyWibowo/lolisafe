@@ -54,7 +54,7 @@
     "search-query-parser": "~1.6.0",
     "sharp": "~0.30.4",
     "sqlite3": "~5.0.6",
-    "systeminformation": "~5.11.9"
+    "systeminformation": "~5.11.14"
   },
   "devDependencies": {
     "@ronilaukkarinen/gulp-stylelint": "~14.0.6",
