@@ -41,7 +41,7 @@
     "clamscan": "~2.1.2",
     "content-disposition": "~0.5.4",
     "express": "~4.17.3",
-    "express-rate-limit": "~6.3.0",
+    "express-rate-limit": "~6.4.0",
     "fluent-ffmpeg": "~2.1.2",
     "helmet": "~5.0.2",
     "jszip": "~3.9.1",
