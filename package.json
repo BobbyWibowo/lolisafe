@@ -59,7 +59,7 @@
   "devDependencies": {
     "@ronilaukkarinen/gulp-stylelint": "~14.0.6",
     "browserslist": "~4.20.3",
-    "bulma": "~0.9.3",
+    "bulma": "~0.9.4",
     "chokidar": "~3.5.3",
     "cssnano": "~5.1.7",
     "del": "~6.0.0",
