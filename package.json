@@ -81,7 +81,7 @@
     "gulp-sourcemaps": "~3.0.0",
     "gulp-terser": "~2.1.0",
     "postcss": "~8.4.14",
-    "postcss-preset-env": "~7.5.0",
+    "postcss-preset-env": "~7.6.0",
     "stylelint": "~14.8.3",
     "stylelint-config-standard-scss": "~3.0.0"
   }
