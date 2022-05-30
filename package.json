@@ -52,7 +52,7 @@
     "nunjucks": "~3.2.3",
     "randomstring": "~1.2.2",
     "search-query-parser": "~1.6.0",
-    "sharp": "~0.30.4",
+    "sharp": "~0.30.6",
     "sqlite3": "~5.0.8",
     "systeminformation": "~5.11.15"
   },
