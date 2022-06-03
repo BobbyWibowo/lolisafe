@@ -61,7 +61,7 @@
     "browserslist": "~4.20.3",
     "bulma": "~0.9.4",
     "chokidar": "~3.5.3",
-    "cssnano": "~5.1.10",
+    "cssnano": "~5.1.11",
     "del": "~6.1.1",
     "eslint": "~8.16.0",
     "eslint-config-standard": "~17.0.0",
