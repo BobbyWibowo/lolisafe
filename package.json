@@ -54,7 +54,7 @@
     "randomstring": "~1.2.2",
     "search-query-parser": "~1.6.0",
     "sharp": "~0.30.6",
-    "systeminformation": "~5.11.21"
+    "systeminformation": "~5.11.22"
   },
   "devDependencies": {
     "@ronilaukkarinen/gulp-stylelint": "~14.0.6",
