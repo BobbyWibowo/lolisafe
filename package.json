@@ -64,7 +64,7 @@
     "chokidar": "~3.5.3",
     "cssnano": "~5.1.12",
     "del": "~6.1.1",
-    "eslint": "~8.18.0",
+    "eslint": "~8.19.0",
     "eslint-config-standard": "~17.0.0",
     "eslint-plugin-compat": "~4.0.2",
     "eslint-plugin-import": "~2.26.0",
