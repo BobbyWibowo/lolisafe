@@ -29,7 +29,7 @@ page.prepareShareX = () => {
     RequestMethod: 'POST',
     RequestURL: `${window.location.protocol}//${origin}/api/upload`,
     Headers: headers,
-    Body: 'MultipartFromData',
+    Body: 'MultipartFormData',
     FileFormName: 'files[]',
     URL: '$json:files[0].url$',
     ThumbnailURL: '$json:files[0].url$'
