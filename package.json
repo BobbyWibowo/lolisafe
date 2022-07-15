@@ -36,7 +36,7 @@
   "dependencies": {
     "@bobbywibowo/serve-static": "git+https://git@github.com/BobbyWibowo/serve-static#8030f1b3cb17cf75b69d7ead8db3e879f6fc992f",
     "bcrypt": "~5.0.1",
-    "better-sqlite3": "~7.5.3",
+    "better-sqlite3": "~7.6.1",
     "blake3": "~2.1.7",
     "body-parser": "~1.20.0",
     "clamscan": "~2.1.2",
