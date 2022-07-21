@@ -7,19 +7,19 @@ First make sure you have docker and docker composer installed, so please follow 
 - https://docs.docker.com/compose/install/
 
 After that:
+- Navigate to this directory (`docker`).
 - Copy the config file called `docker-compose.config.example.yml` and name it `docker-compose.config.yml` with the values you want. Those that are left commented will use the default values.
-- Copy either `lolisafe.tld.http.example.conf` or `lolisafe.tld.https.example.conf` and name it `lolisafe.tld.conf` for either HTTP or HTTPS
-- - If using HTTPS make sure to put your certificates into the `ssl` folder and name them accordingly:
-- - - `lolisafe.tld.crt` for the certificate
-- - - `lolisafe.tld.key` for the certificate key
+- Navigate to `nginx` directory, then copy either `lolisafe.tld.http.example.conf` or `lolisafe.tld.https.example.conf` and name it `lolisafe.tld.conf` for either HTTP or HTTPS.  
+  If using HTTPS make sure to put your certificates into the `ssl` folder and name them accordingly:
+  - `lolisafe.tld.crt` for the certificate
+  - `lolisafe.tld.key` for the certificate key
 
 Once you are done run the following commands:
 
-- `cd docker`
 - `./lolisafe.sh prod pull`
 - `./lolisafe.sh prod build`
 - `./lolisafe.sh prod up -d`
 
-Use `./lolisafe.ps1` instead if you are on a Windows host.
+If you are on a Windows host, replace `./lolisafe.sh` with `./lolisafe.ps1`.
 
 Congrats, your lolisafe instance is now running.

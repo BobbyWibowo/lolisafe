@@ -120,7 +120,6 @@
   <div class="container has-text-left">
     <h2 id="technical" class='title is-spaced'>Technical</h2>
 
-    {% if not globals.is_for_personal_use -%}
     <h3 class="subtitle has-text-white-ter">What are the allowed extensions here?</h3>
     <article class="message">
       <div class="message-body">
@@ -140,6 +139,8 @@
       </div>
     </article>
 
+    {% if not globals.is_for_personal_use -%}
+    {# lolisafe does not do this by default, enable only if you specifically do so #}
     <h3 class="subtitle has-text-white-ter">Why are my <strong>.htm/.html</strong> uploads being served as plain text?</h3>
     <article class="message">
       <div class="message-body">

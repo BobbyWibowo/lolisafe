@@ -33,72 +33,69 @@ self.generateUniqueToken = async () => {
   return null
 }
 
-self.verify = (req, res, next) => {
-  Promise.resolve().then(async () => {
-    const token = typeof req.body.token === 'string'
-      ? req.body.token.trim()
-      : ''
+self.verify = async (req, res) => {
+  // Parse POST body
+  req.body = await req.json()
 
-    if (!token) throw new ClientError('No token provided.', { statusCode: 403 })
+  const token = typeof req.body.token === 'string'
+    ? req.body.token.trim()
+    : ''
 
-    const user = await utils.db.table('users')
-      .where('token', token)
-      .select('username', 'permission')
-      .first()
+  if (!token) throw new ClientError('No token provided.', { statusCode: 403 })
 
-    if (!user) {
-      throw new ClientError('Invalid token.', { statusCode: 403, code: 10001 })
+  const user = await utils.db.table('users')
+    .where('token', token)
+    .select('username', 'permission')
+    .first()
+
+  if (!user) {
+    throw new ClientError('Invalid token.', { statusCode: 403, code: 10001 })
+  }
+
+  const obj = {
+    success: true,
+    username: user.username,
+    permissions: perms.mapPermissions(user)
+  }
+
+  const group = perms.group(user)
+  if (group) {
+    obj.group = group
+    if (utils.retentions.enabled) {
+      obj.retentionPeriods = utils.retentions.periods[group]
+      obj.defaultRetentionPeriod = utils.retentions.default[group]
     }
+  }
 
-    const obj = {
-      success: true,
-      username: user.username,
-      permissions: perms.mapPermissions(user)
-    }
+  if (utils.clientVersion) {
+    obj.version = utils.clientVersion
+  }
 
-    const group = perms.group(user)
-    if (group) {
-      obj.group = group
-      if (utils.retentions.enabled) {
-        obj.retentionPeriods = utils.retentions.periods[group]
-        obj.defaultRetentionPeriod = utils.retentions.default[group]
-      }
-    }
-
-    if (utils.clientVersion) {
-      obj.version = utils.clientVersion
-    }
-
-    await res.json(obj)
-  }).catch(next)
+  return res.json(obj)
 }
 
-self.list = (req, res, next) => {
-  Promise.resolve().then(async () => {
-    const user = await utils.authorize(req)
-    await res.json({ success: true, token: user.token })
-  }).catch(next)
+self.list = async (req, res) => {
+  const user = await utils.authorize(req)
+  return res.json({ success: true, token: user.token })
 }
 
-self.change = (req, res, next) => {
-  Promise.resolve().then(async () => {
-    const user = await utils.authorize(req, 'token')
+self.change = async (req, res) => {
+  const user = await utils.authorize(req, 'token')
 
-    const newToken = await self.generateUniqueToken()
-    if (!newToken) {
-      throw new ServerError('Failed to allocate a unique token. Try again?')
-    }
+  const newToken = await self.generateUniqueToken()
+  if (!newToken) {
+    throw new ServerError('Failed to allocate a unique token. Try again?')
+  }
 
-    await utils.db.table('users')
-      .where('token', user.token)
-      .update({
-        token: newToken,
-        timestamp: Math.floor(Date.now() / 1000)
-      })
-    self.onHold.delete(newToken)
+  await utils.db.table('users')
+    .where('token', user.token)
+    .update({
+      token: newToken,
+      timestamp: Math.floor(Date.now() / 1000)
+    })
+  self.onHold.delete(newToken)
 
-    await res.json({ success: true, token: newToken })
-  }).catch(next)
+  return res.json({ success: true, token: newToken })
 }
 
 module.exports = self

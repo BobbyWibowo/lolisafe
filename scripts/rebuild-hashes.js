@@ -1,8 +1,8 @@
 const blake3 = require('blake3')
 const fs = require('fs')
 const path = require('path')
-const paths = require('../controllers/pathsController')
-const utils = require('../controllers/utilsController')
+const paths = require('./../controllers/pathsController')
+const utils = require('./../controllers/utilsController')
 
 ;(async () => {
   const location = process.argv[1].replace(process.cwd() + '/', '')

@@ -1,4 +1,4 @@
-const utils = require('../controllers/utilsController')
+const utils = require('./../controllers/utilsController')
 
 ;(async () => {
   const location = process.argv[1].replace(process.cwd() + '/', '')

@@ -225,38 +225,42 @@ const cloudflarePurgeCacheQueue = cloudflareAuth && fastq.promise(async chunk =>
       logger.log(`${prefix}: ${message}`)
     }
 
-    try {
-      const purge = await fetch(url, {
-        method: 'POST',
-        body: JSON.stringify({ files: chunk }),
-        headers
-      })
-      const response = await purge.json()
+    const response = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({ files: chunk }),
+      headers
+    })
+      .then(res => res.json())
+      .catch(error => error)
 
-      const hasErrorsArray = Array.isArray(response.errors) && response.errors.length
-      if (hasErrorsArray) {
-        const rateLimit = response.errors.find(error => /rate limit/i.test(error.message))
-        if (rateLimit && i < MAX_TRIES - 1) {
-          _log(`${rateLimit.code}: ${rateLimit.message}. Retrying in a minute\u2026`)
-          await new Promise(resolve => setTimeout(resolve, 60000))
-          continue
-        }
-      }
-
-      result.success = response.success
-      result.errors = hasErrorsArray
-        ? response.errors.map(error => `${error.code}: ${error.message}`)
-        : []
-    } catch (error) {
-      const errorString = error.toString()
+    // If fetch errors out, instead of API responding with API errors
+    if (response instanceof Error) {
+      const errorString = response.toString()
       if (i < MAX_TRIES - 1) {
         _log(`${errorString}. Retrying in 5 seconds\u2026`)
         await new Promise(resolve => setTimeout(resolve, 5000))
         continue
       }
-
       result.errors = [errorString]
+      break
     }
+
+    // If API reponds with API errors
+    const hasErrorsArray = Array.isArray(response.errors) && response.errors.length
+    if (hasErrorsArray) {
+      const rateLimit = response.errors.find(error => /rate limit/i.test(error.message))
+      if (rateLimit && i < MAX_TRIES - 1) {
+        _log(`${rateLimit.code}: ${rateLimit.message}. Retrying in a minute\u2026`)
+        await new Promise(resolve => setTimeout(resolve, 60000))
+        continue
+      }
+    }
+
+    // If succeeds or out of retries
+    result.success = response.success
+    result.errors = hasErrorsArray
+      ? response.errors.map(error => `${error.code}: ${error.message}`)
+      : []
     break
   }
 
@@ -742,9 +746,10 @@ self.purgeCloudflareCache = async (names, uploads, thumbs) => {
   }
 
   const results = []
-  await Promise.all(chunks.map(async chunk =>
-    results.push(await cloudflarePurgeCacheQueue.push(chunk))
-  ))
+  for (const chunk of chunks) {
+    const result = await cloudflarePurgeCacheQueue.push(chunk)
+    results.push(result)
+  }
   return results
 }
 
@@ -784,320 +789,324 @@ self.invalidateStatsCache = type => {
   statsData[type].cache = null
 }
 
-self.stats = (req, res, next) => {
-  Promise.resolve().then(async () => {
-    const user = await self.authorize(req)
+const generateStats = async (req, res) => {
+  const user = await self.authorize(req)
 
-    const isadmin = perms.is(user, 'admin')
-    if (!isadmin) throw new ClientError('', { statusCode: 403 })
+  const isadmin = perms.is(user, 'admin')
+  if (!isadmin) throw new ClientError('', { statusCode: 403 })
 
-    const hrstart = process.hrtime()
-    const stats = {}
-    Object.keys(statsData).forEach(key => {
-      // Pre-assign object keys to fix their display order
-      stats[statsData[key].title] = {}
-    })
+  const hrstart = process.hrtime()
+  const stats = {}
+  Object.keys(statsData).forEach(key => {
+    // Pre-assign object keys to fix their display order
+    stats[statsData[key].title] = {}
+  })
 
-    const os = await si.osInfo()
+  const os = await si.osInfo()
 
-    const getSystemInfo = async () => {
-      const data = statsData.system
+  const getSystemInfo = async () => {
+    const data = statsData.system
 
-      if (!data.cache && data.generating) {
-        stats[data.title] = false
-      } else if (((Date.now() - data.generatedAt) <= 500) || data.generating) {
-        // Use cache for 500 ms (0.5 seconds)
-        stats[data.title] = data.cache
-      } else {
-        data.generating = true
-        data.generatedAt = Date.now()
+    if (!data.cache && data.generating) {
+      stats[data.title] = false
+    } else if (((Date.now() - data.generatedAt) <= 500) || data.generating) {
+      // Use cache for 500 ms (0.5 seconds)
+      stats[data.title] = data.cache
+    } else {
+      data.generating = true
+      data.generatedAt = Date.now()
 
-        const currentLoad = await si.currentLoad()
-        const mem = await si.mem()
-        const time = si.time()
-        const nodeUptime = process.uptime()
+      const currentLoad = await si.currentLoad()
+      const mem = await si.mem()
+      const time = si.time()
+      const nodeUptime = process.uptime()
 
-        if (self.scan.instance) {
-          try {
-            self.scan.version = await self.scan.instance.getVersion().then(s => s.trim())
-          } catch (error) {
-            logger.error(error)
-            self.scan.version = 'Errored when querying version.'
-          }
+      if (self.scan.instance) {
+        try {
+          self.scan.version = await self.scan.instance.getVersion().then(s => s.trim())
+        } catch (error) {
+          logger.error(error)
+          self.scan.version = 'Errored when querying version.'
         }
-
-        stats[data.title] = {
-          Platform: `${os.platform} ${os.arch}`,
-          Distro: `${os.distro} ${os.release}`,
-          Kernel: os.kernel,
-          Scanner: self.scan.version || 'N/A',
-          'CPU Load': `${currentLoad.currentLoad.toFixed(1)}%`,
-          'CPUs Load': currentLoad.cpus.map(cpu => `${cpu.load.toFixed(1)}%`).join(', '),
-          'System Memory': {
-            value: {
-              used: mem.active,
-              total: mem.total
-            },
-            type: 'byteUsage'
-          },
-          'Memory Usage': {
-            value: process.memoryUsage().rss,
-            type: 'byte'
-          },
-          'System Uptime': {
-            value: Math.floor(time.uptime),
-            type: 'uptime'
-          },
-          'Node.js': `${process.versions.node}`,
-          'Service Uptime': {
-            value: Math.floor(nodeUptime),
-            type: 'uptime'
-          }
-        }
-
-        // Update cache
-        data.cache = stats[data.title]
-        data.generating = false
       }
-    }
 
-    const getFileSystems = async () => {
-      const data = statsData.fileSystems
-
-      if (!data.cache && data.generating) {
-        stats[data.title] = false
-      } else if (((Date.now() - data.generatedAt) <= 60000) || data.generating) {
-        // Use cache for 60000 ms (60 seconds)
-        stats[data.title] = data.cache
-      } else {
-        data.generating = true
-        data.generatedAt = Date.now()
-
-        stats[data.title] = {}
-
-        const fsSize = await si.fsSize()
-        for (const fs of fsSize) {
-          const obj = {
-            value: {
-              total: fs.size,
-              used: fs.used
-            },
-            type: 'byteUsage'
-          }
-          // "available" is a new attribute in systeminformation v5, only tested on Linux,
-          // so add an if-check just in case its availability is limited in other platforms
-          if (typeof fs.available === 'number') {
-            obj.value.available = fs.available
-          }
-          stats[data.title][`${fs.fs} (${fs.type}) on ${fs.mount}`] = obj
+      stats[data.title] = {
+        Platform: `${os.platform} ${os.arch}`,
+        Distro: `${os.distro} ${os.release}`,
+        Kernel: os.kernel,
+        Scanner: self.scan.version || 'N/A',
+        'CPU Load': `${currentLoad.currentLoad.toFixed(1)}%`,
+        'CPUs Load': currentLoad.cpus.map(cpu => `${cpu.load.toFixed(1)}%`).join(', '),
+        'System Memory': {
+          value: {
+            used: mem.active,
+            total: mem.total
+          },
+          type: 'byteUsage'
+        },
+        'Memory Usage': {
+          value: process.memoryUsage().rss,
+          type: 'byte'
+        },
+        'System Uptime': {
+          value: Math.floor(time.uptime),
+          type: 'uptime'
+        },
+        'Node.js': `${process.versions.node}`,
+        'Service Uptime': {
+          value: Math.floor(nodeUptime),
+          type: 'uptime'
         }
-
-        // Update cache
-        data.cache = stats[data.title]
-        data.generating = false
       }
+
+      // Update cache
+      data.cache = stats[data.title]
+      data.generating = false
     }
+  }
 
-    const getUploadsStats = async () => {
-      const data = statsData.uploads
+  const getFileSystems = async () => {
+    const data = statsData.fileSystems
 
-      if (!data.cache && data.generating) {
-        stats[data.title] = false
-      } else if (data.cache) {
-        // Cache will be invalidated with self.invalidateStatsCache() after any related operations
-        stats[data.title] = data.cache
-      } else {
-        data.generating = true
-        data.generatedAt = Date.now()
+    if (!data.cache && data.generating) {
+      stats[data.title] = false
+    } else if (((Date.now() - data.generatedAt) <= 60000) || data.generating) {
+      // Use cache for 60000 ms (60 seconds)
+      stats[data.title] = data.cache
+    } else {
+      data.generating = true
+      data.generatedAt = Date.now()
 
-        stats[data.title] = {
-          Total: 0,
-          Images: 0,
-          Videos: 0,
-          Audios: 0,
-          Others: 0,
-          Temporary: 0,
-          'Size in DB': {
-            value: 0,
-            type: 'byte'
-          }
+      stats[data.title] = {}
+
+      const fsSize = await si.fsSize()
+      for (const fs of fsSize) {
+        const obj = {
+          value: {
+            total: fs.size,
+            used: fs.used
+          },
+          type: 'byteUsage'
         }
-
-        const getTotalCountAndSize = async () => {
-          const uploads = await self.db.table('files')
-            .select('size')
-          stats[data.title].Total = uploads.length
-          stats[data.title]['Size in DB'].value = uploads.reduce((acc, upload) => acc + parseInt(upload.size), 0)
+        // "available" is a new attribute in systeminformation v5, only tested on Linux,
+        // so add an if-check just in case its availability is limited in other platforms
+        if (typeof fs.available === 'number') {
+          obj.value.available = fs.available
         }
+        stats[data.title][`${fs.fs} (${fs.type}) on ${fs.mount}`] = obj
+      }
 
-        const getImagesCount = async () => {
-          stats[data.title].Images = await self.db.table('files')
-            .where(function () {
-              for (const ext of self.imageExts) {
-                this.orWhere('name', 'like', `%${ext}`)
-              }
-            })
-            .count('id as count')
-            .then(rows => rows[0].count)
+      // Update cache
+      data.cache = stats[data.title]
+      data.generating = false
+    }
+  }
+
+  const getUploadsStats = async () => {
+    const data = statsData.uploads
+
+    if (!data.cache && data.generating) {
+      stats[data.title] = false
+    } else if (data.cache) {
+      // Cache will be invalidated with self.invalidateStatsCache() after any related operations
+      stats[data.title] = data.cache
+    } else {
+      data.generating = true
+      data.generatedAt = Date.now()
+
+      stats[data.title] = {
+        Total: 0,
+        Images: 0,
+        Videos: 0,
+        Audios: 0,
+        Others: 0,
+        Temporary: 0,
+        'Size in DB': {
+          value: 0,
+          type: 'byte'
         }
+      }
 
-        const getVideosCount = async () => {
-          stats[data.title].Videos = await self.db.table('files')
-            .where(function () {
-              for (const ext of self.videoExts) {
-                this.orWhere('name', 'like', `%${ext}`)
-              }
-            })
-            .count('id as count')
-            .then(rows => rows[0].count)
-        }
+      const getTotalCountAndSize = async () => {
+        const uploads = await self.db.table('files')
+          .select('size')
+        stats[data.title].Total = uploads.length
+        stats[data.title]['Size in DB'].value = uploads.reduce((acc, upload) => acc + parseInt(upload.size), 0)
+      }
 
-        const getAudiosCount = async () => {
-          stats[data.title].Audios = await self.db.table('files')
-            .where(function () {
-              for (const ext of self.audioExts) {
-                this.orWhere('name', 'like', `%${ext}`)
-              }
-            })
-            .count('id as count')
-            .then(rows => rows[0].count)
-        }
+      const getImagesCount = async () => {
+        stats[data.title].Images = await self.db.table('files')
+          .where(function () {
+            for (const ext of self.imageExts) {
+              this.orWhere('name', 'like', `%${ext}`)
+            }
+          })
+          .count('id as count')
+          .then(rows => rows[0].count)
+      }
 
-        const getOthersCount = async () => {
-          stats[data.title].Temporary = await self.db.table('files')
-            .whereNotNull('expirydate')
-            .count('id as count')
-            .then(rows => rows[0].count)
-        }
+      const getVideosCount = async () => {
+        stats[data.title].Videos = await self.db.table('files')
+          .where(function () {
+            for (const ext of self.videoExts) {
+              this.orWhere('name', 'like', `%${ext}`)
+            }
+          })
+          .count('id as count')
+          .then(rows => rows[0].count)
+      }
 
-        await Promise.all([
-          getTotalCountAndSize(),
-          getImagesCount(),
-          getVideosCount(),
-          getAudiosCount(),
-          getOthersCount()
-        ])
+      const getAudiosCount = async () => {
+        stats[data.title].Audios = await self.db.table('files')
+          .where(function () {
+            for (const ext of self.audioExts) {
+              this.orWhere('name', 'like', `%${ext}`)
+            }
+          })
+          .count('id as count')
+          .then(rows => rows[0].count)
+      }
 
-        stats[data.title].Others = stats[data.title].Total -
+      const getOthersCount = async () => {
+        stats[data.title].Temporary = await self.db.table('files')
+          .whereNotNull('expirydate')
+          .count('id as count')
+          .then(rows => rows[0].count)
+      }
+
+      await Promise.all([
+        getTotalCountAndSize(),
+        getImagesCount(),
+        getVideosCount(),
+        getAudiosCount(),
+        getOthersCount()
+      ])
+
+      stats[data.title].Others = stats[data.title].Total -
             stats[data.title].Images -
             stats[data.title].Videos -
             stats[data.title].Audios
 
-        // Update cache
-        data.cache = stats[data.title]
-        data.generating = false
-      }
+      // Update cache
+      data.cache = stats[data.title]
+      data.generating = false
     }
+  }
 
-    const getUsersStats = async () => {
-      const data = statsData.users
+  const getUsersStats = async () => {
+    const data = statsData.users
 
-      if (!data.cache && data.generating) {
-        stats[data.title] = false
-      } else if (data.cache) {
-        // Cache will be invalidated with self.invalidateStatsCache() after any related operations
-        stats[data.title] = data.cache
-      } else {
-        data.generating = true
-        data.generatedAt = Date.now()
+    if (!data.cache && data.generating) {
+      stats[data.title] = false
+    } else if (data.cache) {
+      // Cache will be invalidated with self.invalidateStatsCache() after any related operations
+      stats[data.title] = data.cache
+    } else {
+      data.generating = true
+      data.generatedAt = Date.now()
 
-        stats[data.title] = {
-          Total: 0,
-          Disabled: 0
-        }
-
-        const permissionKeys = Object.keys(perms.permissions).reverse()
-        permissionKeys.forEach(p => {
-          stats[data.title][p] = 0
-        })
-
-        const users = await self.db.table('users')
-        stats[data.title].Total = users.length
-        for (const user of users) {
-          if (user.enabled === false || user.enabled === 0) {
-            stats[data.title].Disabled++
-          }
-
-          user.permission = user.permission || 0
-          for (const p of permissionKeys) {
-            if (user.permission === perms.permissions[p]) {
-              stats[data.title][p]++
-              break
-            }
-          }
-        }
-
-        // Update cache
-        data.cache = stats[data.title]
-        data.generating = false
+      stats[data.title] = {
+        Total: 0,
+        Disabled: 0
       }
-    }
 
-    const getAlbumsStats = async () => {
-      const data = statsData.albums
+      const permissionKeys = Object.keys(perms.permissions).reverse()
+      permissionKeys.forEach(p => {
+        stats[data.title][p] = 0
+      })
 
-      if (!data.cache && data.generating) {
-        stats[data.title] = false
-      } else if (data.cache) {
-        // Cache will be invalidated with self.invalidateStatsCache() after any related operations
-        stats[data.title] = data.cache
-      } else {
-        data.generating = true
-        data.generatedAt = Date.now()
-
-        stats[data.title] = {
-          Total: 0,
-          Disabled: 0,
-          Public: 0,
-          Downloadable: 0,
-          'ZIP Generated': 0
+      const users = await self.db.table('users')
+      stats[data.title].Total = users.length
+      for (const user of users) {
+        if (user.enabled === false || user.enabled === 0) {
+          stats[data.title].Disabled++
         }
 
-        const albums = await self.db.table('albums')
-        stats[data.title].Total = albums.length
-
-        const activeAlbums = []
-        for (const album of albums) {
-          if (!album.enabled) {
-            stats[data.title].Disabled++
-            continue
+        user.permission = user.permission || 0
+        for (const p of permissionKeys) {
+          if (user.permission === perms.permissions[p]) {
+            stats[data.title][p]++
+            break
           }
-          activeAlbums.push(album.id)
-          if (album.download) stats[data.title].Downloadable++
-          if (album.public) stats[data.title].Public++
         }
-
-        await paths.readdir(paths.zips).then(files => {
-          stats[data.title]['ZIP Generated'] = files.length
-        }).catch(() => {})
-
-        stats[data.title]['Files in albums'] = await self.db.table('files')
-          .whereIn('albumid', activeAlbums)
-          .count('id as count')
-          .then(rows => rows[0].count)
-
-        // Update cache
-        data.cache = stats[data.title]
-        data.generating = false
       }
+
+      // Update cache
+      data.cache = stats[data.title]
+      data.generating = false
     }
+  }
 
-    await Promise.all([
-      getSystemInfo(),
-      getFileSystems(),
-      getUploadsStats(),
-      getUsersStats(),
-      getAlbumsStats()
-    ])
+  const getAlbumsStats = async () => {
+    const data = statsData.albums
 
-    return res.json({ success: true, stats, hrtime: process.hrtime(hrstart) })
-  }).catch(error => {
-    // Reset generating state when encountering any errors
-    Object.keys(statsData).forEach(key => {
-      statsData[key].generating = false
+    if (!data.cache && data.generating) {
+      stats[data.title] = false
+    } else if (data.cache) {
+      // Cache will be invalidated with self.invalidateStatsCache() after any related operations
+      stats[data.title] = data.cache
+    } else {
+      data.generating = true
+      data.generatedAt = Date.now()
+
+      stats[data.title] = {
+        Total: 0,
+        Disabled: 0,
+        Public: 0,
+        Downloadable: 0,
+        'ZIP Generated': 0
+      }
+
+      const albums = await self.db.table('albums')
+      stats[data.title].Total = albums.length
+
+      const activeAlbums = []
+      for (const album of albums) {
+        if (!album.enabled) {
+          stats[data.title].Disabled++
+          continue
+        }
+        activeAlbums.push(album.id)
+        if (album.download) stats[data.title].Downloadable++
+        if (album.public) stats[data.title].Public++
+      }
+
+      await paths.readdir(paths.zips).then(files => {
+        stats[data.title]['ZIP Generated'] = files.length
+      }).catch(() => {})
+
+      stats[data.title]['Files in albums'] = await self.db.table('files')
+        .whereIn('albumid', activeAlbums)
+        .count('id as count')
+        .then(rows => rows[0].count)
+
+      // Update cache
+      data.cache = stats[data.title]
+      data.generating = false
+    }
+  }
+
+  await Promise.all([
+    getSystemInfo(),
+    getFileSystems(),
+    getUploadsStats(),
+    getUsersStats(),
+    getAlbumsStats()
+  ])
+
+  return res.json({ success: true, stats, hrtime: process.hrtime(hrstart) })
+}
+
+self.stats = async (req, res) => {
+  return generateStats(req, res)
+    .catch(error => {
+      logger.debug('caught generateStats() errors')
+      // Reset generating state when encountering any errors
+      Object.keys(statsData).forEach(key => {
+        statsData[key].generating = false
+      })
+      throw error
     })
-    return next(error)
-  })
 }
 
 module.exports = self

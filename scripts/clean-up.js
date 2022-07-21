@@ -1,6 +1,6 @@
 const path = require('path')
-const paths = require('../controllers/pathsController')
-const utils = require('../controllers/utilsController')
+const paths = require('./../controllers/pathsController')
+const utils = require('./../controllers/utilsController')
 
 const self = {
   getFiles: async directory => {

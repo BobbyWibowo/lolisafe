@@ -1,13 +1,14 @@
-const routes = require('express').Router()
+const { Router } = require('hyper-express')
+const routes = new Router()
 const path = require('path')
-const paths = require('./../controllers/pathsController')
+const errors = require('./../controllers/errorsController')
 const utils = require('./../controllers/utilsController')
 const config = require('./../config')
 
-routes.get('/a/:identifier', async (req, res, next) => {
-  const identifier = req.params.identifier
+routes.get('/a/:identifier', async (req, res) => {
+  const identifier = req.path_parameters && req.path_parameters.identifier
   if (identifier === undefined) {
-    res.status(404).sendFile(path.join(paths.errorRoot, config.errorPages[404]))
+    return errors.handleNotFound(req, res)
   }
 
   const album = await utils.db.table('albums')
@@ -19,10 +20,10 @@ routes.get('/a/:identifier', async (req, res, next) => {
     .first()
 
   if (!album || album.public === 0) {
-    return res.status(404).sendFile(path.join(paths.errorRoot, config.errorPages[404]))
+    return errors.handleNotFound(req, res)
   }
 
-  const nojs = req.query.nojs !== undefined
+  const nojs = req.query_parameters.nojs !== undefined
 
   let cacheid
   if (process.env.NODE_ENV !== 'development') {
@@ -31,7 +32,7 @@ routes.get('/a/:identifier', async (req, res, next) => {
 
     const cache = utils.albumRenderStore.get(cacheid)
     if (cache) {
-      return res.send(cache)
+      return res.type('html').send(cache)
     } else if (cache === null) {
       return res.render('album-notice', {
         config,
@@ -74,27 +75,25 @@ routes.get('/a/:identifier', async (req, res, next) => {
     ? utils.md.instance.render(album.description)
     : null
 
-  return res.render('album', {
+  // This will already end the Response,
+  // thus may only continue with tasks that will not interface with Response any further
+  const html = await res.render('album', {
     config,
     utils,
     versions: utils.versionStrings,
     album,
     files,
     nojs
-  }, (error, html) => {
-    const data = error ? null : html
-    if (cacheid) {
-      // Only store rendered page if it did not error out and album actually have files
-      if (data && files.length) {
-        utils.albumRenderStore.set(cacheid, data)
-      } else {
-        utils.albumRenderStore.delete(cacheid)
-      }
-    }
-
-    // Express should already send error to the next handler
-    if (!error) return res.send(data)
   })
+
+  if (cacheid) {
+    // Only store rendered page if it did not error out and album actually have files
+    if (html && files.length) {
+      utils.albumRenderStore.set(cacheid, html)
+    } else {
+      utils.albumRenderStore.delete(cacheid)
+    }
+  }
 })
 
 module.exports = routes

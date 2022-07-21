@@ -11,56 +11,61 @@ const self = {
     .map(key => Number(key))
 }
 
-self.handle = (error, req, res, next) => {
+self.handleError = (req, res, error) => {
   if (!res || res.headersSent) {
-    console.error('Unexpected missing "res" object or headers alredy sent.')
-    return console.trace()
+    logger.error('Error: Unexpected missing "res" object or headers alredy sent.')
+    return logger.error(error)
   }
 
-  // Error messages that can be returned to users
+  res.header('Cache-Control', 'no-store')
+
+  // Errors that should be returned to users as JSON payload
   const isClientError = error instanceof ClientError
   const isServerError = error instanceof ServerError
 
-  const logStack = (!isClientError && !isServerError) ||
-    (isServerError && error.logStack)
-  if (logStack) {
-    logger.error(error)
-  }
+  let statusCode = res.statusCode
 
-  const statusCode = (isClientError || isServerError)
-    ? error.statusCode
-    : 500
+  if (isClientError || isServerError) {
+    if (isServerError && error.logStack) {
+      logger.error(error)
+    }
 
-  const json = {}
+    const json = {
+      success: false,
+      description: error.message || 'An unexpected error occurred. Try again?',
+      code: error.code
+    }
 
-  const description = (isClientError || isServerError)
-    ? error.message
-    : 'An unexpected error occurred. Try again?'
-  if (description) {
-    json.description = description
-  }
+    if (statusCode === undefined) {
+      res.status(error.statusCode || 500)
+    }
 
-  if ((isClientError || isServerError) && error.code) {
-    json.code = error.code
-  }
-
-  res.setHeader('Cache-Control', 'no-store')
-
-  if (Object.keys(json).length) {
-    json.success = false
-    return res.status(statusCode).json(json)
+    return res.json(json)
   } else {
+    // Generic Errors
+    logger.error(error)
+
+    if (statusCode === undefined) {
+      statusCode = 500
+    }
+
     if (self.errorPagesCodes.includes(statusCode)) {
-      return res.status(statusCode).sendFile(path.join(paths.errorRoot, config.errorPages[statusCode]))
+      return res
+        .status(statusCode)
+        .sendFile(path.join(paths.errorRoot, config.errorPages[statusCode]))
     } else {
-      return res.status(statusCode).end()
+      return res
+        .status(statusCode)
+        .end()
     }
   }
 }
 
-self.handleMissing = (req, res, next) => {
-  res.setHeader('Cache-Control', 'no-store')
-  return res.status(404).sendFile(path.join(paths.errorRoot, config.errorPages[404]))
+self.handleNotFound = (req, res) => {
+  res.header('Cache-Control', 'no-store')
+  return res
+    .status(404)
+    .sendFile(path.join(paths.errorRoot, config.errorPages[404]))
 }
 
 module.exports = self

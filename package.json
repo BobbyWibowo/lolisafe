@@ -10,7 +10,7 @@
     "url": "https://github.com/BobbyWibowo/lolisafe/issues"
   },
   "engines": {
-    "node": ">=12.22.0"
+    "node": ">=14.0.0"
   },
   "license": "MIT",
   "scripts": {
@@ -34,25 +34,26 @@
     "full-upgrade": "rm -f ./yarn.lock && yarn"
   },
   "dependencies": {
-    "@bobbywibowo/serve-static": "git+https://git@github.com/BobbyWibowo/serve-static#8030f1b3cb17cf75b69d7ead8db3e879f6fc992f",
     "bcrypt": "~5.0.1",
     "better-sqlite3": "~7.6.1",
     "blake3": "~2.1.7",
-    "body-parser": "~1.20.0",
     "clamscan": "~2.1.2",
     "content-disposition": "~0.5.4",
-    "express": "~4.18.1",
-    "express-rate-limit": "~6.4.0",
+    "etag": "~1.8.1",
     "fastq": "~1.13.0",
     "fluent-ffmpeg": "~2.1.2",
+    "fresh": "~0.5.2",
     "helmet": "~5.1.0",
+    "hyper-express": "~6.4.1",
     "jszip": "~3.10.0",
     "knex": "~2.1.0",
+    "live-directory": "~2.3.2",
     "markdown-it": "~13.0.1",
-    "multer": "~1.4.5-lts.1",
     "node-fetch": "~2.6.7",
     "nunjucks": "~3.2.3",
     "randomstring": "~1.2.2",
+    "range-parser": "~1.2.1",
+    "rate-limiter-flexible": "~2.3.7",
     "search-query-parser": "~1.6.0",
     "sharp": "~0.30.7",
     "systeminformation": "~5.12.1"
