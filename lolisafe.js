@@ -9,10 +9,15 @@ process.on('unhandledRejection', error => {
   logger.error(error, { prefix: 'Unhandled Rejection (Promise): ' })
 })
 
-// Libraries
+// Require libraries
+const bodyParser = require('body-parser')
+const contentDisposition = require('content-disposition')
+const express = require('express')
 const helmet = require('helmet')
-const HyperExpress = require('hyper-express')
 const NodeClam = require('clamscan')
+const nunjucks = require('nunjucks')
+const path = require('path')
+const rateLimit = require('express-rate-limit')
 const { accessSync, constants } = require('fs')
 
 // Check required config files
@@ -27,31 +32,19 @@ for (const _file of configFiles) {
   }
 }
 
-// Config files
+// Require config files
 const config = require('./config')
 const versions = require('./src/versions')
 
 // lolisafe
 logger.log('Starting lolisafe\u2026')
-const safe = new HyperExpress.Server({
-  trust_proxy: Boolean(config.trustProxy)
-})
+const safe = express()
 
 const errors = require('./controllers/errorsController')
 const paths = require('./controllers/pathsController')
 paths.initSync()
 const utils = require('./controllers/utilsController')
 
-// Middlewares
-const ExpressCompat = require('./controllers/middlewares/expressCompat')
-const NunjucksRenderer = require('./controllers/middlewares/nunjucksRenderer')
-const RateLimiter = require('./controllers/middlewares/rateLimiter')
-const ServeLiveDirectory = require('./controllers/middlewares/serveLiveDirectory')
-
-// Handlers
-const ServeStatic = require('./controllers/handlers/serveStatic')
-
-// Routes
 const album = require('./routes/album')
 const api = require('./routes/api')
 const file = require('./routes/file')
@@ -59,28 +52,6 @@ const nojs = require('./routes/nojs')
 const player = require('./routes/player')
 
 const isDevMode = process.env.NODE_ENV === 'development'
-
-// Express-compat
-const expressCompatInstance = new ExpressCompat()
-safe.use(expressCompatInstance.middleware)
-
-// Rate limiters
-if (Array.isArray(config.rateLimiters)) {
-  let whitelistedKeys
-  if (Array.isArray(config.rateLimitersWhitelist)) {
-    whitelistedKeys = new Set(config.rateLimitersWhitelist)
-  }
-  for (const rateLimit of config.rateLimiters) {
-    // Init RateLimiter using Request.ip as key
-    const rateLimiterInstance = new RateLimiter('ip', rateLimit.options, whitelistedKeys)
-    for (const route of rateLimit.routes) {
-      safe.use(route, rateLimiterInstance.middleware)
-    }
-  }
-} else if (config.rateLimits) {
-  logger.error('Config option "rateLimits" is deprecated.')
-  logger.error('Please consult the provided sample file for the new option "rateLimiters".')
-}
 
 // Helmet security headers
 if (config.helmet instanceof Object) {
@@ -112,7 +83,7 @@ if (config.accessControlAllowOrigin) {
     config.accessControlAllowOrigin = '*'
   }
   safe.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', config.accessControlAllowOrigin)
+    res.set('Access-Control-Allow-Origin', config.accessControlAllowOrigin)
     if (config.accessControlAllowOrigin !== '*') {
       res.vary('Origin')
     }
@@ -120,20 +91,103 @@ if (config.accessControlAllowOrigin) {
   })
 }
 
-// NunjucksRenderer middleware
-const nunjucksRendererInstance = new NunjucksRenderer('views', {
+if (config.trustProxy) {
+  safe.set('trust proxy', 1)
+}
+
+// https://mozilla.github.io/nunjucks/api.html#configure
+nunjucks.configure('views', {
+  autoescape: true,
+  express: safe,
   watch: isDevMode
+  // noCache: isDevMode
 })
-safe.use(nunjucksRendererInstance.middleware)
+safe.set('view engine', 'njk')
+safe.enable('view cache')
 
-// Array of routes to apply CDN Cache-Control onto,
-// and additionally call Cloudflare API to have their CDN caches purged when lolisafe starts
-const cdnRoutes = [...config.pages]
+// Configure rate limits (disabled during development)
+if (!isDevMode && Array.isArray(config.rateLimits) && config.rateLimits.length) {
+  for (const _rateLimit of config.rateLimits) {
+    const limiter = rateLimit(_rateLimit.config)
+    for (const route of _rateLimit.routes) {
+      safe.use(route, limiter)
+    }
+  }
+}
 
-// Defaults to no-op
-let setHeadersForStaticAssets = () => {}
+safe.use(bodyParser.urlencoded({ extended: true }))
+safe.use(bodyParser.json())
 
-// Cache control
+const cdnPages = [...config.pages]
+let setHeaders
+
+const contentTypes = typeof config.overrideContentTypes === 'object' &&
+  Object.keys(config.overrideContentTypes)
+const overrideContentTypes = contentTypes && contentTypes.length && function (res, path) {
+  // Do only if accessing files from uploads' root directory (i.e. not thumbs, etc.)
+  const relpath = path.replace(paths.uploads, '')
+  if (relpath.indexOf('/', 1) === -1) {
+    const name = relpath.substring(1)
+    const extname = utils.extname(name).substring(1)
+    for (const contentType of contentTypes) {
+      if (config.overrideContentTypes[contentType].includes(extname)) {
+        res.set('Content-Type', contentType)
+        break
+      }
+    }
+  }
+}
+
+const initServeStaticUploads = (opts = {}) => {
+  if (config.setContentDisposition) {
+    const SimpleDataStore = require('./controllers/utils/SimpleDataStore')
+    utils.contentDispositionStore = new SimpleDataStore(
+      config.contentDispositionOptions || {
+        limit: 50,
+        strategy: SimpleDataStore.STRATEGIES[0]
+      }
+    )
+    opts.preSetHeaders = async (res, req, path, stat) => {
+      // Do only if accessing files from uploads' root directory (i.e. not thumbs, etc.),
+      // AND only if GET requests
+      const relpath = path.replace(paths.uploads, '')
+      if (relpath.indexOf('/', 1) !== -1 || req.method !== 'GET') return
+      const name = relpath.substring(1)
+      try {
+        let original = utils.contentDispositionStore.get(name)
+        if (original === undefined) {
+          utils.contentDispositionStore.hold(name)
+          original = await utils.db.table('files')
+            .where('name', name)
+            .select('original')
+            .first()
+            .then(_file => {
+              utils.contentDispositionStore.set(name, _file.original)
+              return _file.original
+            })
+        }
+        if (original) {
+          res.set('Content-Disposition', contentDisposition(original, { type: 'inline' }))
+        }
+      } catch (error) {
+        utils.contentDispositionStore.delete(name)
+        logger.error(error)
+      }
+    }
+    // serveStatic is provided with @bobbywibowo/serve-static, a fork of express/serve-static.
+    // The fork allows specifying an async function by the name preSetHeaders,
+    // which it will await before creating 'send' stream to client.
+    // This is necessary due to database queries being async tasks,
+    // and express/serve-static not having the functionality by default.
+    safe.use('/', require('@bobbywibowo/serve-static')(paths.uploads, opts))
+    logger.debug('Inititated SimpleDataStore for Content-Disposition: ' +
+      `{ limit: ${utils.contentDispositionStore.limit}, strategy: "${utils.contentDispositionStore.strategy}" }`)
+  } else {
+    safe.use('/', express.static(paths.uploads, opts))
+  }
+}
+
+// Cache control (safe.fiery.me)
 if (config.cacheControl) {
   const cacheControls = {
     // max-age: 6 months
@@ -147,72 +201,82 @@ if (config.cacheControl) {
   }
 
   // By default soft cache everything
-  safe.use((req, res, next) => {
-    res.header('Cache-Control', cacheControls.validate)
-    return next()
+  safe.use('/', (req, res, next) => {
+    res.set('Cache-Control', cacheControls.validate)
+    next()
   })
 
   switch (config.cacheControl) {
     case 1:
     case true:
-      // If using CDN, cache most front-end pages in CDN
-      // Include /api/check since it will only reply with persistent JSON payload
-      // that will not change, unless config file is edited and lolisafe is then restarted
-      cdnRoutes.push('api/check')
-      safe.use((req, res, next) => {
-        if (req.method === 'GET' || req.method === 'HEAD') {
-          const page = req.path === '/' ? 'home' : req.path.substring(1)
-          if (cdnRoutes.includes(page)) {
-            res.header('Cache-Control', cacheControls.cdn)
-          }
-        }
-        return next()
-      })
+      // If using CDN, cache public pages in CDN
+      cdnPages.push('api/check')
+      for (const page of cdnPages) {
+        safe.get(`/${page === 'home' ? '' : page}`, (req, res, next) => {
+          res.set('Cache-Control', cacheControls.cdn)
+          next()
+        })
+      }
       break
+  }
+
+  // If serving uploads with node
+  if (config.serveFilesWithNode) {
+    initServeStaticUploads({
+      setHeaders: (res, path) => {
+        // Override Content-Type header if necessary
+        if (overrideContentTypes) {
+          overrideContentTypes(res, path)
+        }
+        // If using CDN, cache uploads in CDN as well
+        // Use with cloudflare.purgeCache enabled in config file
+        if (config.cacheControl !== 2) {
+          res.set('Cache-Control', cacheControls.cdn)
+        }
+      }
+    })
   }
 
   // Function for static assets.
   // This requires the assets to use version in their query string,
   // as they will be cached by clients for a very long time.
-  setHeadersForStaticAssets = (req, res) => {
-    res.header('Cache-Control', cacheControls.static)
+  setHeaders = res => {
+    res.set('Cache-Control', cacheControls.static)
   }
 
   // Consider album ZIPs static as well, since they use version in their query string
-  safe.use('/api/album/zip', (req, res, next) => {
-    const versionString = parseInt(req.query_parameters.v)
+  safe.use(['/api/album/zip'], (req, res, next) => {
+    const versionString = parseInt(req.query.v)
     if (versionString > 0) {
-      res.header('Cache-Control', cacheControls.static)
+      res.set('Cache-Control', cacheControls.static)
     } else {
-      res.header('Cache-Control', cacheControls.disable)
+      res.set('Cache-Control', cacheControls.disable)
     }
-    return next()
+    next()
   })
+} else if (config.serveFilesWithNode) {
+  const opts = {}
+  // Override Content-Type header if necessary
+  if (overrideContentTypes) {
+    opts.setHeaders = overrideContentTypes
+  }
+  initServeStaticUploads(opts)
 }
 
-// Init LiveDirectory middlewares for static assets
-// Static assets in /public directory
-const serveLiveDirectoryPublicInstance = new ServeLiveDirectory({ path: paths.public }, {
-  setHeaders: setHeadersForStaticAssets
-})
-safe.use(serveLiveDirectoryPublicInstance.middleware)
-// Static assets in /dist directory
-const serveLiveDirectoryDistInstance = new ServeLiveDirectory({ path: paths.dist }, {
-  setHeaders: setHeadersForStaticAssets
-})
-safe.use(serveLiveDirectoryDistInstance.middleware)
+// Static assets
+safe.use('/', express.static(paths.public, { setHeaders }))
+safe.use('/', express.static(paths.dist, { setHeaders }))
 
-// Routes
-safe.use(album)
-safe.use(file)
-safe.use(nojs)
-safe.use(player)
+safe.use('/', album)
+safe.use('/', file)
+safe.use('/', nojs)
+safe.use('/', player)
 safe.use('/api', api)
 
 ;(async () => {
   try {
     // Init database
-    await require('./controllers/utils/initDatabase')(utils.db)
+    await require('./controllers/utils/initDatabase.js')(utils.db)
 
     // Purge any leftover in chunks directory, do not wait
     paths.purgeChunks()
@@ -233,55 +297,30 @@ safe.use('/api', api)
       }
     }
 
-    const serveLiveDirectoryCustomPagesInstance = new ServeLiveDirectory({
-      path: paths.customPages,
-      keep: ['.html']
-    })
-
     // Cookie Policy
     if (config.cookiePolicy) {
       config.pages.push('cookiepolicy')
     }
 
-    // Front-end pages middleware
-    // HTML files in customPages directory can also override any built-in pages,
-    // if they have matching names with the routes (e.g. home.html can override the homepage)
-    // Aside from that, due to using LiveDirectory,
-    // custom pages can be added/removed on the fly while lolisafe is running
-    safe.use((req, res, next) => {
-      if (req.method === 'GET' || req.method === 'HEAD') {
-        const page = req.path === '/' ? 'home' : req.path.substring(1)
-        const customPage = serveLiveDirectoryCustomPagesInstance.instance.get(`${page}.html`)
-        if (customPage) {
-          return serveLiveDirectoryCustomPagesInstance.handler(req, res, customPage)
-        } else if (config.pages.includes(page)) {
-          // These rendered pages are persistently cached during production
-          return res.render(page, {
-            config, utils, versions: utils.versionStrings
-          }, !isDevMode)
-        }
+    // Check for custom pages, otherwise fallback to Nunjucks templates
+    for (const page of config.pages) {
+      const customPage = path.join(paths.customPages, `${page}.html`)
+      if (!await paths.access(customPage).catch(() => true)) {
+        safe.get(`/${page === 'home' ? '' : page}`, (req, res, next) => res.sendFile(customPage))
+      } else if (page === 'home') {
+        safe.get('/', (req, res, next) => res.render(page, {
+          config, utils, versions: utils.versionStrings
+        }))
+      } else {
+        safe.get(`/${page}`, (req, res, next) => res.render(page, {
+          config, utils, versions: utils.versionStrings
+        }))
       }
-      return next()
-    })
-
-    // Init ServerStatic last if serving uploaded files with node
-    if (config.serveFilesWithNode) {
-      const serveStaticInstance = new ServeStatic(paths.uploads, {
-        contentDispositionOptions: config.contentDispositionOptions,
-        ignorePatterns: [
-          '/chunks/'
-        ],
-        overrideContentTypes: config.overrideContentTypes,
-        setContentDisposition: config.setContentDisposition
-      })
-      safe.get('/*', serveStaticInstance.handler)
-      safe.head('/*', serveStaticInstance.handler)
-      utils.contentDispositionStore = serveStaticInstance.contentDispositionStore
     }
 
-    // Web server error handlers (must always be set after all routes/middlewares)
-    safe.set_not_found_handler(errors.handleNotFound)
-    safe.set_error_handler(errors.handleError)
+    // Express error handlers
+    safe.use(errors.handleMissing)
+    safe.use(errors.handle)
 
     // Git hash
     if (config.showGitHash) {
@@ -316,7 +355,7 @@ safe.use('/api', api)
     }
 
     // Binds Express to port
-    await safe.listen(utils.conf.port)
+    await new Promise(resolve => safe.listen(utils.conf.port, () => resolve()))
     logger.log(`lolisafe started on port ${utils.conf.port}`)
 
     // Cache control (safe.fiery.me)
@@ -324,7 +363,7 @@ safe.use('/api', api)
     if (config.cacheControl && config.cacheControl !== 2) {
       if (config.cloudflare.purgeCache) {
         logger.log('Cache control enabled, purging Cloudflare\'s cache...')
-        const results = await utils.purgeCloudflareCache(cdnRoutes)
+        const results = await utils.purgeCloudflareCache(cdnPages)
         let errored = false
         let succeeded = 0
         for (const result of results) {

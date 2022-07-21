@@ -1,10 +1,9 @@
-const { Router } = require('hyper-express')
-const routes = new Router()
+const routes = require('express').Router()
 const uploadController = require('./../controllers/uploadController')
 const utils = require('./../controllers/utilsController')
 const config = require('./../config')
 
-routes.get('/nojs', async (req, res) => {
+routes.get('/nojs', async (req, res, next) => {
   return res.render('nojs', {
     config,
     utils,
@@ -12,7 +11,7 @@ routes.get('/nojs', async (req, res) => {
   })
 })
 
-routes.post('/nojs', async (req, res) => {
+routes.post('/nojs', (req, res, next) => {
   res._json = res.json
   res.json = (...args) => {
     const result = args[0]
@@ -24,11 +23,7 @@ routes.post('/nojs', async (req, res) => {
       files: result.files || [{}]
     })
   }
-  return uploadController.upload(req, res)
-}, {
-  // HyperExpress defaults to 250kb
-  // https://github.com/kartikk221/hyper-express/blob/6.2.4/docs/Server.md#server-constructor-options
-  max_body_length: parseInt(config.uploads.maxSize) * 1e6
+  return uploadController.upload(req, res, next)
 })
 
 module.exports = routes
