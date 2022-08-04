@@ -45,7 +45,7 @@
     "fluent-ffmpeg": "~2.1.2",
     "fresh": "~0.5.2",
     "helmet": "~5.1.1",
-    "hyper-express": "~6.4.2",
+    "hyper-express": "~6.4.4",
     "jszip": "~3.10.1",
     "knex": "~2.2.0",
     "live-directory": "~2.3.2",
