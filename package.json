@@ -63,7 +63,7 @@
     "@ronilaukkarinen/gulp-stylelint": "~14.0.6",
     "browserslist": "~4.21.3",
     "bulma": "~0.9.4",
-    "cssnano": "~5.1.12",
+    "cssnano": "~5.1.13",
     "del": "~6.1.1",
     "eslint": "~8.21.0",
     "eslint-config-standard": "~17.0.0",
