@@ -84,7 +84,7 @@
     "gulp-terser": "~2.1.0",
     "postcss": "~8.4.16",
     "postcss-preset-env": "~7.7.2",
-    "stylelint": "~14.9.1",
+    "stylelint": "~14.10.0",
     "stylelint-config-standard-scss": "~5.0.0"
   }
 }
