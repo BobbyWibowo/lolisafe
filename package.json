@@ -65,7 +65,7 @@
     "bulma": "~0.9.4",
     "cssnano": "~5.1.13",
     "del": "~6.1.1",
-    "eslint": "~8.21.0",
+    "eslint": "~8.22.0",
     "eslint-config-standard": "~17.0.0",
     "eslint-plugin-compat": "~4.0.2",
     "eslint-plugin-import": "~2.26.0",
