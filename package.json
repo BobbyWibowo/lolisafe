@@ -47,7 +47,7 @@
     "helmet": "~5.1.1",
     "hyper-express": "6.4.2",
     "jszip": "~3.10.1",
-    "knex": "~2.2.0",
+    "knex": "~2.3.0",
     "live-directory": "~2.3.2",
     "markdown-it": "~13.0.1",
     "node-fetch": "~2.6.7",
