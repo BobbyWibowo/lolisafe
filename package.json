@@ -54,7 +54,7 @@
     "nunjucks": "~3.2.3",
     "randomstring": "~1.2.2",
     "range-parser": "~1.2.1",
-    "rate-limiter-flexible": "~2.3.8",
+    "rate-limiter-flexible": "~2.3.9",
     "search-query-parser": "~1.6.0",
     "sharp": "~0.30.7",
     "systeminformation": "~5.12.6"
