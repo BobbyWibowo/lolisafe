@@ -45,7 +45,7 @@
     "fastq": "~1.13.0",
     "fluent-ffmpeg": "~2.1.2",
     "fresh": "~0.5.2",
-    "helmet": "~5.1.1",
+    "helmet": "~6.0.0",
     "hyper-express": "~6.4.7",
     "jszip": "~3.10.1",
     "knex": "~2.3.0",
