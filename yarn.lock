@@ -5115,10 +5115,10 @@ range-parser@^1.2.1, range-parser@~1.2.1:
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.1.tgz#3cf37023d199e1c24d1a55b84800c2f3e6468031"
   integrity sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==
 
-rate-limiter-flexible@~2.3.9:
-  version "2.3.9"
-  resolved "https://registry.yarnpkg.com/rate-limiter-flexible/-/rate-limiter-flexible-2.3.9.tgz#67e2ac539ea01f57e000f69bebb85ae041d4c3ca"
-  integrity sha512-N8VlhY2yztqpF+YUqb2TX7ROV9naBLlnpacxJVA5FkZ3LQZplM7dIy9qU8wFzpgmMER2GfVb5n++kmMVChfvXA==
+rate-limiter-flexible@~2.3.10:
+  version "2.3.10"
+  resolved "https://registry.yarnpkg.com/rate-limiter-flexible/-/rate-limiter-flexible-2.3.10.tgz#3d707b165b06fa4f193e0d3c6c5684f6e3acd1d3"
+  integrity sha512-bXqRBBb85WmnJemw9+xLdA7ezLXwZ+hXcOD8ZzfGMhbus4jHRrjTMXZ1kJqpKnpGu34scZc6f0qYNSxBwO7yrg==
 
 rc@^1.2.7:
   version "1.2.8"
