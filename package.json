@@ -47,7 +47,7 @@
     "fresh": "~0.5.2",
     "fs-jetpack": "~5.0.0",
     "helmet": "~6.0.0",
-    "hyper-express": "~6.4.10",
+    "hyper-express": "~6.4.11",
     "jszip": "~3.10.1",
     "knex": "~2.3.0",
     "live-directory": "~2.3.2",
