@@ -2410,10 +2410,10 @@ fs-constants@^1.0.0:
   resolved "https://registry.yarnpkg.com/fs-constants/-/fs-constants-1.0.0.tgz#6be0de9be998ce16af8afc24497b9ee9b7ccd9ad"
   integrity sha512-y6OAwoSIf7FyjMIv94u+b5rdheZEjzR63GTyZJm5qh4Bi+2YgwLCcI/fPFZkL5PSixOt6ZNKm+w+Hfp/Bciwow==
 
-fs-jetpack@~5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/fs-jetpack/-/fs-jetpack-5.0.0.tgz#020bde38f9d4a5422fc663b7934ac8abdc64a885"
-  integrity sha512-0f9QoIbfAq/DuafAQisvsHJmLnJB2D53d9FXIu0UZPUg4Kzocez1+AinToPON6JD/C60kDlye121puiR5ivfdg==
+fs-jetpack@~5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/fs-jetpack/-/fs-jetpack-5.1.0.tgz#dcd34d709b69007c9dc2420a6f2b9e8f986cff0d"
+  integrity sha512-Xn4fDhLydXkuzepZVsr02jakLlmoARPy+YWIclo4kh0GyNGUHnTqeH/w/qIsVn50dFxtp8otPL2t/HcPJBbxUA==
   dependencies:
     minimatch "^5.1.0"
 
