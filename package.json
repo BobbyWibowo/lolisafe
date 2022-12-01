@@ -63,7 +63,7 @@
     "systeminformation": "~5.12.11"
   },
   "devDependencies": {
-    "@ronilaukkarinen/gulp-stylelint": "~14.0.6",
+    "@ronilaukkarinen/gulp-stylelint": "~14.0.9",
     "browserslist": "~4.21.4",
     "bulma": "~0.9.4",
     "cssnano": "~5.1.14",
