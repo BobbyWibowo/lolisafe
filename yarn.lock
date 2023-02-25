@@ -342,10 +342,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/eslint@^8.4.9":
-  version "8.4.10"
-  resolved "https://registry.yarnpkg.com/@types/eslint/-/eslint-8.4.10.tgz#19731b9685c19ed1552da7052b6f668ed7eb64bb"
-  integrity sha512-Sl/HOqN8NKPmhWo2VBEPm0nvHnu2LL3v9vKo8MEq0EtbJ4eVzGPl41VNPvn5E1i5poMk4/XD8UriLHpJvEP/Nw==
+"@types/eslint@^8.21.0":
+  version "8.21.1"
+  resolved "https://registry.yarnpkg.com/@types/eslint/-/eslint-8.21.1.tgz#110b441a210d53ab47795124dbc3e9bb993d1e7c"
+  integrity sha512-rc9K8ZpVjNcLs8Fp0dkozd5Pt2Apk1glO4Vgz8ix1u6yFByxfqo5Yavpy65o+93TAe24jr7v+eSBtFLvOQtCRQ==
   dependencies:
     "@types/estree" "*"
     "@types/json-schema" "*"
@@ -2738,16 +2738,16 @@ gulp-dart-sass@~1.0.2:
     through2 "^2.0.0"
     vinyl-sourcemaps-apply "^0.2.0"
 
-gulp-eslint-new@~1.7.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/gulp-eslint-new/-/gulp-eslint-new-1.7.0.tgz#c14f8b442d1eb0402ecdf69886544aa5446044ee"
-  integrity sha512-qrG9ItWNI5Vs8+P5P8YSJfEjx7w1V9ynRybOLunfjB0hfTZO/eMNmhPl8MCWKN/KHe1Q3QwsHyOl9rUv/2Q8yw==
+gulp-eslint-new@~1.7.2:
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/gulp-eslint-new/-/gulp-eslint-new-1.7.2.tgz#5563c07b7de7f514148ecf33cc9ed1f382ade801"
+  integrity sha512-3CAR6q7L4UaCRvui/4AhmsuKIFvkuNew0Qsu4HWYCGEJ1u02PoZpsqyfWHlZ6AyBqXdw+V+dBa6Oab5vOxmhKA==
   dependencies:
-    "@types/eslint" "^8.4.9"
+    "@types/eslint" "^8.21.0"
     "@types/node" ">=12"
     eslint "8"
     fancy-log "^2.0.0"
-    plugin-error "^2.0.0"
+    plugin-error "^2.0.1"
     semver "^7.3.8"
     ternary-stream "^3.0.0"
     vinyl-fs "^3.0.3"
@@ -4425,6 +4425,13 @@ plugin-error@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/plugin-error/-/plugin-error-2.0.0.tgz#d05da1ab0737220ae06ea04e1683d177b55f5ca4"
   integrity sha512-o4bwIOmuFwUg2MU6xt7plGEQY3YyENx6kvwaFZBrUpamA91FdS9w3U+pU0y4OuDoBQe+jf3RLGSfQebSRBEVsQ==
+  dependencies:
+    ansi-colors "^1.0.1"
+
+plugin-error@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/plugin-error/-/plugin-error-2.0.1.tgz#f2ac92bac8c85e3e23492d76d0c3ca12f30eb00b"
+  integrity sha512-zMakqvIDyY40xHOvzXka0kUvf40nYIuwRE8dWhti2WtjQZ31xAgBZBhxsK7vK3QbRXS1Xms/LO7B5cuAsfB2Gg==
   dependencies:
     ansi-colors "^1.0.1"
 
