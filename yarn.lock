@@ -6176,10 +6176,10 @@ svgo@^2.7.0:
     picocolors "^1.0.0"
     stable "^0.1.8"
 
-systeminformation@~5.17.10:
-  version "5.17.10"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-5.17.10.tgz#bd1e12fc3e5de7259cf71b52468cdddd52f3af91"
-  integrity sha512-FUm264baeDpruTw4P50BRRmYHD39D3jkOQ0VpNIkp8CdNejQbsp4Me18jacGBc/mWSVxKdQw4wSHmcL7ERxrNg==
+systeminformation@~5.17.12:
+  version "5.17.12"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-5.17.12.tgz#5b3e1bfcd5c2c5b459f1a88e61fed27cf9668ba8"
+  integrity sha512-I3pfMW2vue53u+X08BNxaJieaHkRoMMKjWetY9lbYJeWFaeWPO6P4FkNc4XOCX8F9vbQ0HqQ25RJoz3U/B7liw==
 
 table@^6.8.1:
   version "6.8.1"
