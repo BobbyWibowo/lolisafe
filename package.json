@@ -54,7 +54,7 @@
     "markdown-it": "~13.0.1",
     "node-fetch": "~2.6.9",
     "nunjucks": "~3.2.3",
-    "parse-duration": "~1.0.2",
+    "parse-duration": "~1.0.3",
     "randomstring": "~1.2.3",
     "range-parser": "~1.2.1",
     "rate-limiter-flexible": "~2.4.1",
