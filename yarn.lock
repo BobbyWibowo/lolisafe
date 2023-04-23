@@ -393,15 +393,15 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@ronilaukkarinen/gulp-stylelint@~14.0.9":
-  version "14.0.9"
-  resolved "https://registry.yarnpkg.com/@ronilaukkarinen/gulp-stylelint/-/gulp-stylelint-14.0.9.tgz#d0202b6c8bee7c8e9336157953c2d530047c3193"
-  integrity sha512-bOSWJz5TO2bUBWFuAq7DC7VWuxChx+1lFBnZ8PpP4/hoQEQbmdxK+UDpkisiHRIKpefM74XNqWTDVujNglCGyw==
+"@ronilaukkarinen/gulp-stylelint@~14.1.1":
+  version "14.1.1"
+  resolved "https://registry.yarnpkg.com/@ronilaukkarinen/gulp-stylelint/-/gulp-stylelint-14.1.1.tgz#34f43c3b0cf99377216ed4ec23d5ca7f985fda13"
+  integrity sha512-3gXiYu0PkPTXs7l70V6zrHCy9O1KziMTKy9fcDho2KXiAxUcFeBaZ8Gw6Sz46Rj5vJTXMgrVd4fAoRHfxO3tBQ==
   dependencies:
     "@jridgewell/trace-mapping" "^0.3.17"
     ansi-colors "^4.1.3"
     fancy-log "^2.0.0"
-    plugin-error "^2.0.0"
+    plugin-error "^2.0.1"
 
 "@trysound/sax@0.2.0":
   version "0.2.0"
@@ -4713,13 +4713,6 @@ plugin-error@^1.0.1:
     arr-diff "^4.0.0"
     arr-union "^3.1.0"
     extend-shallow "^3.0.2"
-
-plugin-error@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/plugin-error/-/plugin-error-2.0.0.tgz#d05da1ab0737220ae06ea04e1683d177b55f5ca4"
-  integrity sha512-o4bwIOmuFwUg2MU6xt7plGEQY3YyENx6kvwaFZBrUpamA91FdS9w3U+pU0y4OuDoBQe+jf3RLGSfQebSRBEVsQ==
-  dependencies:
-    ansi-colors "^1.0.1"
 
 plugin-error@^2.0.1:
   version "2.0.1"
