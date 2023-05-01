@@ -1,22 +1,6 @@
 version: "3.7"
 
 services:
-    nginx:
-        build:
-            context: ./nginx
-            dockerfile: Dockerfile
-        expose:
-            - "80"
-            - "443"
-        ports:
-            - "80:80"
-            - "443:443"
-        restart: unless-stopped
-        healthcheck:
-            test: ["CMD", "service", "nginx", "status"]
-            interval: 60s
-            timeout: 5s
-
     lolisafe:
         build:
             context: ../
