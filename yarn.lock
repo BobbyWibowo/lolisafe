@@ -3083,10 +3083,10 @@ https-proxy-agent@^5.0.0:
     agent-base "6"
     debug "4"
 
-hyper-express@~6.5.9:
-  version "6.5.9"
-  resolved "https://registry.yarnpkg.com/hyper-express/-/hyper-express-6.5.9.tgz#96bdc1a74f01ec1c51cdd46d3d83e390f667cc08"
-  integrity sha512-xJyxeM8eKaNfvuJKwjCMzsGGvgEUpdDqya0MZ+XL2mHmhvVZnfVQxNdwsB92NoZyQpgxNWZphu7C+/kjWoq3Ug==
+hyper-express@~6.7.0:
+  version "6.7.0"
+  resolved "https://registry.yarnpkg.com/hyper-express/-/hyper-express-6.7.0.tgz#fdf58aed2f6a445bf73e5e82292b5f42c74502d9"
+  integrity sha512-+RohKRXKMqPy+lnRGyezUA5h0Axe7fVhwXyoK10YJxGP3Si16WQIFEwpwDIeEGG3pXMd3+E05Txd6d0x1UEwAA==
   dependencies:
     "@types/busboy" "^0.3.1"
     "@types/express" "^4.17.13"
@@ -3098,7 +3098,8 @@ hyper-express@~6.5.9:
     mime-types "^2.1.33"
     range-parser "^1.2.1"
     type-is "^1.6.18"
-    uWebSockets.js "github:uNetworking/uWebSockets.js#v20.23.0"
+    typed-emitter "^2.1.0"
+    uWebSockets.js "github:uNetworking/uWebSockets.js#v20.25.0"
 
 ieee754@^1.1.13:
   version "1.2.1"
@@ -5439,6 +5440,13 @@ run-parallel@^1.1.9:
   dependencies:
     queue-microtask "^1.2.2"
 
+rxjs@^7.5.2:
+  version "7.8.1"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.8.1.tgz#6f6f3d99ea8044291efd92e7c7fcf562c4057543"
+  integrity sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==
+  dependencies:
+    tslib "^2.1.0"
+
 safe-buffer@5.2.1, safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@~5.2.0:
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.2.1.tgz#1eaf9fa9bdb1fdd4ec75f58f9cdb4e6b7827eec6"
@@ -6234,6 +6242,11 @@ tsconfig-paths@^3.14.1:
     minimist "^1.2.6"
     strip-bom "^3.0.0"
 
+tslib@^2.1.0:
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.5.2.tgz#1b6f07185c881557b0ffa84b111a0106989e8338"
+  integrity sha512-5svOrSA2w3iGFDs1HibEVBGbDrAY82bFQ3HZ3ixB+88nsbsWQoKqDRb5UBYAUPEzbBn6dAp5gRNXglySbx1MlA==
+
 tunnel-agent@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/tunnel-agent/-/tunnel-agent-0.6.0.tgz#27a5dea06b36b04a0a9966774b290868f0fc40fd"
@@ -6295,14 +6308,22 @@ typed-array-length@^1.0.4:
     for-each "^0.3.3"
     is-typed-array "^1.1.9"
 
+typed-emitter@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/typed-emitter/-/typed-emitter-2.1.0.tgz#ca78e3d8ef1476f228f548d62e04e3d4d3fd77fb"
+  integrity sha512-g/KzbYKbH5C2vPkaXGu8DJlHrGKHLsM25Zg9WuC9pMGfuvT+X25tZQWo5fK1BjBm8+UrVE9LDCvaY0CQk+fXDA==
+  optionalDependencies:
+    rxjs "^7.5.2"
+
 typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==
 
-"uWebSockets.js@github:uNetworking/uWebSockets.js#v20.23.0":
-  version "20.23.0"
-  resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/49f8f1eb54435e4c3e3e436571e93d1f06aaabbb"
+"uWebSockets.js@github:uNetworking/uWebSockets.js#v20.25.0":
+  version "20.25.0"
+  uid e6ecc2102d68d99dc35969b0898fbd201e0f252b
+  resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/e6ecc2102d68d99dc35969b0898fbd201e0f252b"
 
 uc.micro@^1.0.1, uc.micro@^1.0.5:
   version "1.0.6"
