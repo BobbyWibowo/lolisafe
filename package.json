@@ -47,7 +47,7 @@
     "fluent-ffmpeg": "~2.1.2",
     "fresh": "~0.5.2",
     "fs-jetpack": "~5.1.0",
-    "helmet": "~6.1.5",
+    "helmet": "~6.2.0",
     "hyper-express": "=6.6.0",
     "jszip": "~3.10.1",
     "knex": "~2.4.2",
