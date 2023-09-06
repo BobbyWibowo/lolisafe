@@ -53,7 +53,7 @@
     "knex": "~2.4.2",
     "live-directory": "~2.3.2",
     "markdown-it": "~13.0.1",
-    "node-fetch": "~2.6.11",
+    "node-fetch": "~2.7.0",
     "nunjucks": "~3.2.4",
     "parse-duration": "~1.0.3",
     "randomstring": "~1.2.3",
