@@ -87,7 +87,7 @@
     "gulp-terser": "~2.1.0",
     "postcss": "~8.4.23",
     "postcss-preset-env": "~8.3.2",
-    "stylelint": "~15.6.2",
+    "stylelint": "~15.10.3",
     "stylelint-config-standard-scss": "~8.0.0"
   },
   "volta": {
