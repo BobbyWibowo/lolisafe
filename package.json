@@ -37,7 +37,7 @@
     "abort-controller": "~3.0.0",
     "bcrypt": "~5.1.1",
     "better-sqlite3": "~8.6.0",
-    "blake3": "~2.1.7",
+    "blake3": "~3.0.0",
     "chokidar": "~3.5.3",
     "clamscan": "~2.1.2",
     "content-disposition": "~0.5.4",
