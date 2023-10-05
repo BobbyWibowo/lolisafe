@@ -6275,10 +6275,10 @@ svgo@^3.0.2:
     csso "^5.0.5"
     picocolors "^1.0.0"
 
-systeminformation@~5.21.8:
-  version "5.21.8"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-5.21.8.tgz#18395187e5983698619ed07ca8640ae48ec232b2"
-  integrity sha512-Xf1KDMUTQHLOT9Z7MjpSpsbaICOHcm4OZ9c9qqpkCoXuxq5MoyDrgu5GIQYpoiralXNPrqxDz3ND8MdllpXeQA==
+systeminformation@~5.21.11:
+  version "5.21.11"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-5.21.11.tgz#c1a0b2f0f338903bb7bc1759db9fcd34b7312360"
+  integrity sha512-dIJEGoP5W7k4JJGje/b+inJrOL5hV9LPsUi5ndBvJydI80CVEcu2DZYgt6prdRErDi2SA4SqYd/WMR4b+u34mA==
 
 table@^6.8.1:
   version "6.8.1"

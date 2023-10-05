@@ -61,7 +61,7 @@
     "rate-limiter-flexible": "~3.0.0",
     "search-query-parser": "~1.6.0",
     "sharp": "~0.32.6",
-    "systeminformation": "~5.21.8"
+    "systeminformation": "~5.21.11"
   },
   "devDependencies": {
     "@ronilaukkarinen/gulp-stylelint": "~14.1.1",
