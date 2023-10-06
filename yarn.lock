@@ -473,10 +473,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/eslint@^8.44.1":
-  version "8.44.2"
-  resolved "https://registry.yarnpkg.com/@types/eslint/-/eslint-8.44.2.tgz#0d21c505f98a89b8dd4d37fa162b09da6089199a"
-  integrity sha512-sdPRb9K6iL5XZOmBubg8yiFp5yS/JdUDQsq5e6h95km91MCYMuvp7mh1fjPEYUhvHepKpZOjnEaMBR4PxjWDzg==
+"@types/eslint@^8.44.3":
+  version "8.44.3"
+  resolved "https://registry.yarnpkg.com/@types/eslint/-/eslint-8.44.3.tgz#96614fae4875ea6328f56de38666f582d911d962"
+  integrity sha512-iM/WfkwAhwmPff3wZuPLYiHX18HI24jU8k1ZSH7P8FHwxTjZ2P6CoX2wnF43oprR+YXJM6UUxATkNvyv/JHd+g==
   dependencies:
     "@types/estree" "*"
     "@types/json-schema" "*"
@@ -3027,12 +3027,12 @@ gulp-dart-sass@~1.1.0:
     through2 "^2.0.0"
     vinyl-sourcemaps-apply "^0.2.0"
 
-gulp-eslint-new@~1.8.3:
-  version "1.8.3"
-  resolved "https://registry.yarnpkg.com/gulp-eslint-new/-/gulp-eslint-new-1.8.3.tgz#9fbe1310bcdd2693269221b96ae93ef44a9b9317"
-  integrity sha512-Xk8pI6rMxeFFo1BKvuMvWKC2ZtqvWLUHpFx9CtMD35BLD4l3lSYXbw7Ygxgvfj3kBO/h6MBWfh2PFCNBXyBP1w==
+gulp-eslint-new@~1.8.4:
+  version "1.8.4"
+  resolved "https://registry.yarnpkg.com/gulp-eslint-new/-/gulp-eslint-new-1.8.4.tgz#82e09cd84430d3729eda1b587b565b45db5679e8"
+  integrity sha512-T/eY9OWHJ0LGYvHUagPpC8tOMgLpniYKkgtwn3XA83e3IgeZV0NjlcWbhxkBHwO/LX/lbK01jp/Xqs6REyy+Vg==
   dependencies:
-    "@types/eslint" "^8.44.1"
+    "@types/eslint" "^8.44.3"
     "@types/node" ">=12"
     eslint "8"
     fancy-log "^2.0.0"
