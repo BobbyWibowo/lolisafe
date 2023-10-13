@@ -10,7 +10,7 @@
     "url": "https://github.com/BobbyWibowo/lolisafe/issues"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.18.2"
   },
   "license": "MIT",
   "scripts": {
@@ -91,7 +91,7 @@
     "stylelint-config-standard-scss": "~11.0.0"
   },
   "volta": {
-    "node": "18.18.0",
+    "node": "18.18.2",
     "yarn": "1.22.19"
   }
 }
