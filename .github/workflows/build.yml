@@ -42,7 +42,7 @@ jobs:
       - name: yarn build
         run: yarn build
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 'dist: rebuilt client assets and bumped v1 version string'
           commit_user_name: loli-bot
