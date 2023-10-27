@@ -436,10 +436,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@ronilaukkarinen/gulp-stylelint@~14.1.1":
-  version "14.1.1"
-  resolved "https://registry.yarnpkg.com/@ronilaukkarinen/gulp-stylelint/-/gulp-stylelint-14.1.1.tgz#34f43c3b0cf99377216ed4ec23d5ca7f985fda13"
-  integrity sha512-3gXiYu0PkPTXs7l70V6zrHCy9O1KziMTKy9fcDho2KXiAxUcFeBaZ8Gw6Sz46Rj5vJTXMgrVd4fAoRHfxO3tBQ==
+"@ronilaukkarinen/gulp-stylelint@~14.1.2":
+  version "14.1.2"
+  resolved "https://registry.yarnpkg.com/@ronilaukkarinen/gulp-stylelint/-/gulp-stylelint-14.1.2.tgz#c256093f8e1629fcfc3872533c0fd099c9021491"
+  integrity sha512-Ckg2cD1MVWBJTq8Yp6uxCLB5DtDrhybl1RfOAGv9QodxIF5Bk5OgRhfEkue2do23oYq5147VdATPgd5n4ShV8Q==
   dependencies:
     "@jridgewell/trace-mapping" "^0.3.17"
     ansi-colors "^4.1.3"
