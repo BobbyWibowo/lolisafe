@@ -58,7 +58,7 @@
     "parse-duration": "~1.1.0",
     "randomstring": "~1.3.0",
     "range-parser": "~1.2.1",
-    "rate-limiter-flexible": "~3.0.4",
+    "rate-limiter-flexible": "~3.0.6",
     "search-query-parser": "~1.6.0",
     "sharp": "~0.33.0",
     "systeminformation": "~5.21.20"
