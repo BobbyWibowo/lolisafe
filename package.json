@@ -67,7 +67,7 @@
     "@ronilaukkarinen/gulp-stylelint": "~14.1.2",
     "browserslist": "~4.22.2",
     "bulma": "~0.9.4",
-    "cssnano": "~6.0.1",
+    "cssnano": "~6.0.2",
     "eslint": "~8.55.0",
     "eslint-config-standard": "~17.1.0",
     "eslint-plugin-compat": "~4.2.0",
