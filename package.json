@@ -52,7 +52,7 @@
     "jszip": "~3.10.1",
     "knex": "~3.1.0",
     "live-directory": "~2.3.2",
-    "markdown-it": "~13.0.2",
+    "markdown-it": "~14.0.0",
     "node-fetch": "~2.7.0",
     "nunjucks": "~3.2.4",
     "parse-duration": "~1.1.0",
