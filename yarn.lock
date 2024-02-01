@@ -3270,10 +3270,10 @@ https-proxy-agent@^5.0.0:
     agent-base "6"
     debug "4"
 
-hyper-express@~6.14.4:
-  version "6.14.4"
-  resolved "https://registry.yarnpkg.com/hyper-express/-/hyper-express-6.14.4.tgz#28d1e374ec69c047d1b8d9434cb773732330aea9"
-  integrity sha512-6xoWlhgoegyse9I/GW0Q/h1yXsPFD32f0lRsgqZhYIrjLX7pQTNzOXLckKwJFXb5ZMwdPKoGs5qqNM4j435UjQ==
+hyper-express@~6.14.12:
+  version "6.14.12"
+  resolved "https://registry.yarnpkg.com/hyper-express/-/hyper-express-6.14.12.tgz#9c1bc3addcaebcb76b3ce362ba8c01e31d419639"
+  integrity sha512-NrVA8YXycGJ+BQoqXlsy7W9bCS64kMhDU5GUxG3emdn2nUicNStXAeQ0aF7EMbDP3aPKICJZaj4Qf6CrX4x1tA==
   dependencies:
     accepts "^1.3.7"
     busboy "^1.0.0"
@@ -3283,7 +3283,7 @@ hyper-express@~6.14.4:
     range-parser "^1.2.1"
     type-is "^1.6.18"
     typed-emitter "^2.1.0"
-    uWebSockets.js "github:uNetworking/uWebSockets.js#v20.34.0"
+    uWebSockets.js "github:uNetworking/uWebSockets.js#v20.41.0"
 
 iconv-lite@^0.6.3:
   version "0.6.3"
@@ -6635,9 +6635,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==
 
-"uWebSockets.js@github:uNetworking/uWebSockets.js#v20.34.0":
-  version "20.34.0"
-  resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/fca27c05066342b01951782248640c8013b37196"
+"uWebSockets.js@github:uNetworking/uWebSockets.js#v20.41.0":
+  version "20.41.0"
+  uid "105d9ec47126cb82e4a6f3a08aa2ac78b4bb14f1"
+  resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/105d9ec47126cb82e4a6f3a08aa2ac78b4bb14f1"
 
 uc.micro@^2.0.0:
   version "2.0.0"
