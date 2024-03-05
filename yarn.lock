@@ -585,10 +585,10 @@
   resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.2.0.tgz#cccaab758af56761eb7bf37af6f03f326dd798ad"
   integrity sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==
 
-"@types/eslint@^8.44.9":
-  version "8.44.9"
-  resolved "https://registry.yarnpkg.com/@types/eslint/-/eslint-8.44.9.tgz#5799663009645637bd1c45b2e1a7c8f4caf89534"
-  integrity sha512-6yBxcvwnnYoYT1Uk2d+jvIfsuP4mb2EdIxFnrPABj5a/838qe5bGkNLFOiipX4ULQ7XVQvTxOh7jO+BTAiqsEw==
+"@types/eslint@^8.56.0":
+  version "8.56.5"
+  resolved "https://registry.yarnpkg.com/@types/eslint/-/eslint-8.56.5.tgz#94b88cab77588fcecdd0771a6d576fa1c0af9d02"
+  integrity sha512-u5/YPJHo1tvkSF2CE0USEkxon82Z5DBy2xR+qfyYNszpX9qcs4sT6uq2kBbj4BXY1+DBGDPnrhMZV3pKWGNukw==
   dependencies:
     "@types/estree" "*"
     "@types/json-schema" "*"
@@ -3063,17 +3063,17 @@ gulp-dart-sass@~1.1.0:
     through2 "^2.0.0"
     vinyl-sourcemaps-apply "^0.2.0"
 
-gulp-eslint-new@~1.9.0:
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/gulp-eslint-new/-/gulp-eslint-new-1.9.0.tgz#0a7f6649f64daec5096173f061c4c30a67adcdbb"
-  integrity sha512-x+4rDChh2e04FrqJKs4J5mIS+63cYVVQCfE/2Xpki8DUPhmMUbSaa0ZfgJ+gvwPysKL9rWqusFH46pNa0riKVQ==
+gulp-eslint-new@~1.9.1:
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/gulp-eslint-new/-/gulp-eslint-new-1.9.1.tgz#22584e2f5972bfde5d08cf44fbcd170bc1c7f7e0"
+  integrity sha512-ohcH/DJdLPNAq76SxZux2Ptah515Cvinnfze30yj19VoCqgsT6VH3BdNfll8XJGB8BLz1YWipZ5i45dxrNOk3w==
   dependencies:
-    "@types/eslint" "^8.44.9"
+    "@types/eslint" "^8.56.0"
     "@types/node" ">=12"
     eslint "8"
     fancy-log "^2.0.0"
     plugin-error "^2.0.1"
-    semver "^7.5.4"
+    semver "^7.6.0"
     ternary-stream "^3.0.0"
     vinyl-fs "^4.0.0"
 
@@ -5781,6 +5781,13 @@ semver@^7.0.0, semver@^7.3.4, semver@^7.3.5, semver@^7.5.3, semver@^7.5.4:
   version "7.5.4"
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.5.4.tgz#483986ec4ed38e1c6c48c34894a9182dbff68a6e"
   integrity sha512-1bCSESV6Pv+i21Hvpxp3Dx+pSD8lIPt8uVjRrxAUt/nbswYc+tK6Y2btiULjd4+fnq15PX+nqQDC7Oft7WkwcA==
+  dependencies:
+    lru-cache "^6.0.0"
+
+semver@^7.6.0:
+  version "7.6.0"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.6.0.tgz#1a46a4db4bffcccd97b743b5005c8325f23d4e2d"
+  integrity sha512-EnwXhrlwXMk9gKu5/flx5sv/an57AkRplG3hTK68W7FRDN+k+OWBj65M7719OkA82XLBxrcX0KSHj+X5COhOVg==
   dependencies:
     lru-cache "^6.0.0"
 
