@@ -81,7 +81,7 @@
     "gulp-eslint-new": "~1.9.1",
     "gulp-if": "~3.0.0",
     "gulp-nodemon": "~2.5.0",
-    "gulp-postcss": "~9.0.1",
+    "gulp-postcss": "~10.0.0",
     "gulp-replace": "~1.1.4",
     "gulp-sourcemaps": "~3.0.0",
     "gulp-terser": "~2.1.0",

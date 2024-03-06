@@ -2613,7 +2613,7 @@ extglob@^2.0.4:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
-fancy-log@^1.3.2, fancy-log@^1.3.3:
+fancy-log@^1.3.2:
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/fancy-log/-/fancy-log-1.3.3.tgz#dbc19154f558690150a23953a0adbd035be45fc7"
   integrity sha512-k9oEhlyc0FrVh25qYuSELjr8oxsCoc4/LEZfg2iJJrfEk/tZL9bCoJE47gqAvI2m/AUjluCS4+3I0eTx8n3AEw==
@@ -3238,14 +3238,14 @@ gulp-nodemon@~2.5.0:
     gulp "^4.0.0"
     nodemon "^2.0.2"
 
-gulp-postcss@~9.0.1:
-  version "9.0.1"
-  resolved "https://registry.yarnpkg.com/gulp-postcss/-/gulp-postcss-9.0.1.tgz#d43caa2f2ce1018f889f7c1296faf82e9928b66f"
-  integrity sha512-9QUHam5JyXwGUxaaMvoFQVT44tohpEFpM8xBdPfdwTYGM0AItS1iTQz0MpsF8Jroh7GF5Jt2GVPaYgvy8qD2Fw==
+gulp-postcss@~10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/gulp-postcss/-/gulp-postcss-10.0.0.tgz#a88d7c6602f8a8c94aaa9f28ac3a68def00c7ada"
+  integrity sha512-z1RF2RJEX/BvFsKN11PXai8lRmihZTiHnlJf7Zu8uHaA/Q7Om4IeN8z1NtMAW5OiLwUY02H0DIFl9tHl0CNSgA==
   dependencies:
-    fancy-log "^1.3.3"
-    plugin-error "^1.0.1"
-    postcss-load-config "^3.0.0"
+    fancy-log "^2.0.0"
+    plugin-error "^2.0.1"
+    postcss-load-config "^5.0.0"
     vinyl-sourcemaps-apply "^0.2.1"
 
 gulp-replace@~1.1.4:
@@ -4050,12 +4050,7 @@ liftoff@^3.1.0:
     rechoir "^0.6.2"
     resolve "^1.1.7"
 
-lilconfig@^2.0.5:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/lilconfig/-/lilconfig-2.1.0.tgz#78e23ac89ebb7e1bfbf25b18043de756548e7f52"
-  integrity sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ==
-
-lilconfig@^3.1.1:
+lilconfig@^3.0.0, lilconfig@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/lilconfig/-/lilconfig-3.1.1.tgz#9d8a246fa753106cfc205fd2d77042faca56e5e3"
   integrity sha512-O18pf7nyvHTckunPWCV1XUNXU1piu01y2b7ATJ0ppkUkk8ocqVWBrYjJBCwHDjD/ZWcfyrA0P4gKhzWGi5EINQ==
@@ -5109,13 +5104,13 @@ postcss-lab-function@^6.0.10:
     "@csstools/postcss-progressive-custom-properties" "^3.1.0"
     "@csstools/utilities" "^1.0.0"
 
-postcss-load-config@^3.0.0:
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/postcss-load-config/-/postcss-load-config-3.1.4.tgz#1ab2571faf84bb078877e1d07905eabe9ebda855"
-  integrity sha512-6DiM4E7v4coTE4uzA8U//WhtPwyhiim3eyjEMFCnUpzbrkK9wJHgKDT2mR+HbtSrd/NubVaYTOpSpjUl8NQeRg==
+postcss-load-config@^5.0.0:
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/postcss-load-config/-/postcss-load-config-5.0.3.tgz#f4927637d907de900c4828615077646844545820"
+  integrity sha512-90pBBI5apUVruIEdCxZic93Wm+i9fTrp7TXbgdUCH+/L+2WnfpITSpq5dFU/IPvbv7aNiMlQISpUkAm3fEcvgQ==
   dependencies:
-    lilconfig "^2.0.5"
-    yaml "^1.10.2"
+    lilconfig "^3.0.0"
+    yaml "^2.3.4"
 
 postcss-logical@^7.0.1:
   version "7.0.1"
@@ -7173,10 +7168,10 @@ yallist@^4.0.0:
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-4.0.0.tgz#9bb92790d9c0effec63be73519e11a35019a3a72"
   integrity sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
 
-yaml@^1.10.2:
-  version "1.10.2"
-  resolved "https://registry.yarnpkg.com/yaml/-/yaml-1.10.2.tgz#2301c5ffbf12b467de8da2333a459e29e7920e4b"
-  integrity sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==
+yaml@^2.3.4:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.4.0.tgz#2376db1083d157f4b3a452995803dbcf43b08140"
+  integrity sha512-j9iR8g+/t0lArF4V6NE/QCfT+CO7iLqrXAHZbJdo+LfjqP1vR8Fg5bSiaq6Q2lOD1AUEVrEVIgABvBFYojJVYQ==
 
 yargs-parser@>=5.0.0-security.0:
   version "21.1.1"
