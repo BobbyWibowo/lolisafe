@@ -1,4 +1,4 @@
-FROM node:18-bullseye
+FROM node:18.20.6-bullseye
 
 WORKDIR /usr/lolisafe
 COPY package.json yarn.lock ./
