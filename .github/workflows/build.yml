@@ -45,7 +45,7 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 'dist: rebuilt client assets and bumped v1 version string'
-          commit_user_name: loli-bot
-          commit_user_email: hi@fiery.me
+          commit_user_name: BobbyWibowo
+          commit_user_email: bobbywibowo@live.com
         env:
           CI: true
