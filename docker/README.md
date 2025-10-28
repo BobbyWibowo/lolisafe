@@ -5,6 +5,7 @@ If you want to avoid all the hassle of installing the dependencies, configuring 
 ## Requirements
 
 First make sure you have docker and docker composer installed, so please follow the install instructions for your OS/Distro:
+
 - https://docs.docker.com/engine/install/debian/
 - https://docs.docker.com/compose/install/
 
