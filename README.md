@@ -1,7 +1,5 @@
 # chibisafe, a small safe worth protecting
 
-[![safe.fiery.me](https://i.fiery.me/upN1Q.png)](https://safe.fiery.me)
-
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/WeebDev/chibisafe/master/LICENSE)
 
 [![JavaScript Style Guide](https://cdn.rawgit.com/standard/standard/master/badge.svg)](https://github.com/standard/standard)
@@ -31,9 +29,13 @@
 
 ## Differences with Upstream/Chibisafe
 
-This fork is the one being used at [https://safe.fiery.me](https://safe.fiery.me).
+This fork used to be mainly developed for `safe.fiery.me`.
 
-It was originally based on [WeebDev/chibisafe](https://github.com/WeebDev/chibisafe) v3, but later have been so heavily rewritten that it is now simply its own thing.
+[Archive.is snapshots](https://archive.is/https://safe.fiery.me/)
+
+[Wayback Machine snapshots](https://web.archive.org/web/20240315000000*/https://safe.fiery.me/)
+
+It was originally based on [WeebDev/chibisafe](https://github.com/WeebDev/chibisafe) v3, but later had been so heavily rewritten that it simply became its own thing.
 
 Chibisafe is an upstream rewrite & rebrand, and technically is "lolisafe" v4.
 
@@ -45,6 +47,8 @@ If you want to use an existing chibisafe v3 database with this fork, copy over `
 Configuration file of chibisafe v3 (`config.js`) is also NOT fully compatible with this fork. There are some options that had been renamed and/or restructured
 
 Please make sure your config matches the sample in `config.sample.js` before starting and/or migrating your previous database (hint: this fork's default config assumes your database file is named `db.sqlite3` instead of `db`).
+
+Be aware that development on this fork is no longer continued, because I now prefer to participate with the upstream's development directly.
 
 ## Running in production mode
 
@@ -112,7 +116,7 @@ If you only do some small modifications such as editing `.njk` files and not muc
 
 Still, I heavily recommend simply forking this repository and manually merging upstream changes whenever you feel like doing so. Read more about [syncing a fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork). Especially if you intend to modify client-side CSS/JS files in `src` directory, since you will then need to rebuild assets that go into `dist` directory, which are guaranteed to always conflict with every updates from this fork that modify them.
 
-Afterwards, you can instead clone your fork into your production server and pull updates from there. You can then choose to only install production dependencies with `yarn install --production` there to save some disk space (hint: this is the workflow I use for [https://safe.fiery.me](https://safe.fiery.me)).
+Afterwards, you can instead clone your fork into your production server and pull updates from there. You can then choose to only install production dependencies with `yarn install --production` there to save some disk space (hint: this used to be the workflow I used for `safe.fiery.me`).
 
 ## ClamAV support
 
