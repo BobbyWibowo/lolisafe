@@ -66,7 +66,7 @@ const urlMaxSizeBytes = urlMaxSize * 1e6
 // URL uploads timeout for fetch() instances
 // Please be aware that uWebSockets.js has a hard-coded timeout of 10s of no activity,
 // so letting fetch() run for more than 10s may cause connection to uploaders to drop early,
-// thus preventing lolisafe from responding to uploaders about their URL uploads.
+// thus preventing chibisafe from responding to uploaders about their URL uploads.
 const urlFetchTimeout = 10 * 1000 // 10 seconds
 
 const chunkedUploads = config.uploads.chunkSize &&
@@ -1147,7 +1147,7 @@ self.sendUploadResponse = async (req, res, stored) => {
 
 self.delete = async (req, res) => {
   // Re-map Request.body for .bulkDelete()
-  // This is the legacy API used by lolisafe v3's frontend
+  // This is the legacy API used by chibisafe v3's frontend
   // Meanwhile this fork's frontend uses .bulkDelete() straight away
   const id = parseInt(req.body.id)
   req.body = {

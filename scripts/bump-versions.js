@@ -51,7 +51,7 @@ const self = {
 
       types:
       Space separated list of types (accepts ${min} to ${max}).
-      1: CSS and JS files (lolisafe core assets + fontello.css).
+      1: CSS and JS files (chibisafe core assets + fontello.css).
       2: Icons, images and config files (manifest.json, browserconfig.xml, etc).
       3: CSS and JS files (libs from /public/libs, such as bulma, lazyload, etc).
       4: Renders from /public/render/* directories (to be used with /src/js/misc/render.js).

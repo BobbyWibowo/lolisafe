@@ -10,11 +10,11 @@ process.on('unhandledRejection', error => {
 })
 
 process.once('SIGINT', () => {
-  logger.log('SIGINT signal received, exiting lolisafe\u2026')
+  logger.log('SIGINT signal received, exiting chibisafe\u2026')
   process.exit(0)
 })
 
-// Change working directory into the directory that contains lolisafe.js
+// Change working directory into the directory that contains chibisafe.js
 try {
   const { chdir, cwd } = require('process')
   if (cwd() !== __dirname) {
@@ -46,8 +46,8 @@ for (const _file of configFiles) {
 // ConfigManager
 const config = require('./controllers/utils/ConfigManager')
 
-// lolisafe
-logger.log('Starting lolisafe\u2026')
+// chibisafe
+logger.log('Starting chibisafe\u2026')
 const safe = new HyperExpress.Server({
   trust_proxy: Boolean(config.trustProxy)
 })
@@ -151,7 +151,7 @@ const nunjucksRendererInstance = new NunjucksRenderer('views', {
 safe.use(nunjucksRendererInstance.middleware)
 
 // Array of routes to apply CDN Cache-Control onto,
-// and additionally call Cloudflare API to have their CDN caches purged when lolisafe starts
+// and additionally call Cloudflare API to have their CDN caches purged when chibisafe starts
 const cdnRoutes = [...config.pages]
 
 // Defaults to validating cache's validity before using them (soft cache)
@@ -183,7 +183,7 @@ if (config.cacheControl) {
     case true:
       // If using CDN, cache most front-end pages in CDN
       // Include /api/check since it will only reply with persistent JSON payload
-      // that will not change, unless config file is edited and lolisafe is then restarted
+      // that will not change, unless config file is edited and chibisafe is then restarted
       cdnRoutes.push('api/check')
       safe.use((req, res, next) => {
         if (req.method === 'GET' || req.method === 'HEAD') {
@@ -287,7 +287,7 @@ safe.use('/api', api)
     // HTML files in customPages directory can also override any built-in pages,
     // if they have matching names with the routes (e.g. home.html can override the homepage)
     // Aside from that, due to using LiveDirectory,
-    // custom pages can be added/removed on the fly while lolisafe is running
+    // custom pages can be added/removed on the fly while chibisafe is running
     safe.use((req, res, next) => {
       if (req.method === 'GET' || req.method === 'HEAD') {
         const page = req.path === '/' ? 'home' : req.path.substring(1)
@@ -319,7 +319,7 @@ safe.use('/api', api)
       safe.head('/*', serveStaticInstance.handler)
 
       // Keep reference to internal SimpleDataStore in utils,
-      // allowing the rest of lolisafe to directly interface with it
+      // allowing the rest of chibisafe to directly interface with it
       utils.contentDispositionStore = serveStaticInstance.contentDispositionStore
     }
 
@@ -351,7 +351,7 @@ safe.use('/api', api)
 
     // Binds Express to port
     await safe.listen(config.port)
-    logger.log(`lolisafe started on port ${config.port}`)
+    logger.log(`chibisafe started on port ${config.port}`)
 
     // Cache control (safe.fiery.me)
     // Purge Cloudflare cache

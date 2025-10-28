@@ -2,7 +2,7 @@ module.exports = {
   /*
     If set to true the user will need to specify the auto-generated token
     on each API call, meaning random strangers won't be able to use the service
-    unless they have the token lolisafe provides you with.
+    unless they have the token chibisafe provides you with.
     If it's set to false, then upload will be public for anyone to use.
   */
   private: true,
@@ -24,21 +24,21 @@ module.exports = {
     Be advised that this section is only relevant to the migration script.
     This serves as a compatibility layer to non-fork installs,
     as it will try to force promote the chosen user to superadmin usergroup,
-    since base lolisafe v3 do not have usergroups system.
+    since base chibisafe v3 do not have usergroups system.
     It is recommended to set "superadminForcePromote" to any falsy value for existing installs.
   */
   superadminAccount: 'root',
   superadminForcePromote: true,
 
   /*
-    Here you can decide if you want lolisafe to serve the files or if you prefer doing so via nginx.
+    Here you can decide if you want chibisafe to serve the files or if you prefer doing so via nginx.
     The main difference between the two is the ease of use and the chance of analytics in the future.
     If you set it to `true`, the uploaded files will be located after the host like:
-      https://lolisafe.moe/yourFile.jpg
+      https://chibisafe.moe/yourFile.jpg
 
     If you set it to `false`, you need to set nginx to directly serve whatever folder it is you are serving your
     downloads in. This also gives you the ability to serve them, for example, like this:
-      https://files.lolisafe.moe/yourFile.jpg
+      https://files.chibisafe.moe/yourFile.jpg
 
     Both cases require you to type the domain where the files will be served on the `domain` key below.
     Which one you use is ultimately up to you.
@@ -77,9 +77,9 @@ module.exports = {
   },
 
   /*
-    If you are serving your files with a different domain than your lolisafe homepage,
-    then fill this option with the actual domain for your lolisafe homepage.
-    This will be used for Open Graph tags and wherever lolisafe need to link to internal pages.
+    If you are serving your files with a different domain than your chibisafe homepage,
+    then fill this option with the actual domain for your chibisafe homepage.
+    This will be used for Open Graph tags and wherever chibisafe need to link to internal pages.
     If any falsy value, it will inherit "domain" option.
 
     NOTE: If this, or the inherited "domain" option, is not set to an explicit domain,
@@ -101,13 +101,13 @@ module.exports = {
     Alternatively, you may create regular HTML files (.html) in "pages/custom" directory.
     If doing so, you don't need to add the filename into the array,
     as any changes in said directory will be detected live.
-    You may even add or remove pages while lolisafe is running.
+    You may even add or remove pages while chibisafe is running.
   */
   pages: ['home', 'auth', 'dashboard', 'faq'],
 
   /*
     This will load public/libs/cookieconsent/cookieconsent.min.{css,js} on homepage (configured from home.js).
-    You may use this if you have some specific needs, since lolisafe by itself will not use Cookies at all.
+    You may use this if you have some specific needs, since chibisafe by itself will not use Cookies at all.
     Instead it will use Local Storage for both authentication and preferences/states in Dashboard.
     I'm not sure if Cookies Laws apply to Local Storage as well, although I suppose it makes sense if they do.
     NOTE: Enabling this will automatically push 'cookiepolicy' to pages array above.
@@ -194,7 +194,7 @@ module.exports = {
     These headers will be applied to ALL resources, including API endpoints,
     and files if you serve them with node.
     If you need to disable some of the headers at certain routes, it's recommended
-    to instead use own http server (nginx, etc.) in front of lolisafe and configure from there.
+    to instead use own http server (nginx, etc.) in front of chibisafe and configure from there.
 
     NOTE: You may set "helmet" option as an empty object {} to disable Helmet entirely.
     Setting it as any falsy value will instead apply some default configurations.
@@ -704,7 +704,7 @@ module.exports = {
       If more than one are provided, it will use the first one from left to right, but it will NOT
       attempt to use the next methods even if the selected one fails (meaning there's no fallback mechanism).
       Consult https://api.cloudflare.com/#getting-started-requests for differences.
-      API token configuration example: https://github.com/BobbyWibowo/lolisafe/pull/216#issue-440389284.
+      API token configuration example: https://github.com/BobbyWibowo/chibisafe/pull/216#issue-440389284.
       After everything is ready, you can then set "purgeCache" to true.
     */
     zoneId: '',
@@ -720,12 +720,12 @@ module.exports = {
 
   /*
     Enable Cache-Control header tags.
-    Please consult the relevant codes in lolisafe.js to learn the specifics.
+    Please consult the relevant codes in chibisafe.js to learn the specifics.
     true or 1: Cloudflare (will cache some frontend pages in CDN)
     2: Basic Cache-Control without CDNs
 
     NOTE: If set to Cloudflare, and auth is specified in "cloudflare" option above,
-    lolisafe will automatically call Cloudflare API to purge cache of the relevant frontend pages.
+    chibisafe will automatically call Cloudflare API to purge cache of the relevant frontend pages.
   */
   cacheControl: false,
 

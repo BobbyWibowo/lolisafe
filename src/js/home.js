@@ -381,7 +381,7 @@ page.prepareDropzone = () => {
     headers: { token: page.token },
     chunking: Boolean(page.chunkSize),
     chunkSize: page.chunkSize * 1e6, // this option expects Bytes
-    // Lolisafe cannot handle parallel chunked uploads
+    // chibisafe cannot handle parallel chunked uploads
     // due to technical reasons involving how we optimize I/O performance
     parallelChunkUploads: false,
     timeout: 0,

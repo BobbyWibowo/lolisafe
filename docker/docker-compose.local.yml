@@ -3,17 +3,17 @@ version: "3.7"
 services:
     nginx:
         volumes:
-            - lolisafe-data:/usr/lolisafe/uploads
+            - chibisafe-data:/usr/chibisafe/uploads
 
-    lolisafe:
+    chibisafe:
         volumes:
-            - lolisafe-data:/usr/lolisafe/uploads
-            - lolisafe-database:/usr/lolisafe/database
+            - chibisafe-data:/usr/chibisafe/uploads
+            - chibisafe-database:/usr/chibisafe/database
 
 volumes:
     nginx-data:
         name: "nginx-data"
-    lolisafe-data:
-        name: "lolisafe-data"
-    lolisafe-database:
-        name: "lolisafe-database"
+    chibisafe-data:
+        name: "chibisafe-data"
+    chibisafe-database:
+        name: "chibisafe-database"

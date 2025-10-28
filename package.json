@@ -1,25 +1,25 @@
 {
-  "name": "lolisafe",
+  "name": "chibisafe",
   "version": "3.0.0",
   "description": "Blazing fast file uploader and awesome bunker written in node! 🚀",
   "repository": {
     "type": "git",
-    "url": "https://github.com/BobbyWibowo/lolisafe"
+    "url": "https://github.com/BobbyWibowo/chibisafe"
   },
   "bugs": {
-    "url": "https://github.com/BobbyWibowo/lolisafe/issues"
+    "url": "https://github.com/BobbyWibowo/chibisafe/issues"
   },
   "engines": {
     "node": ">=18.17.0"
   },
   "license": "MIT",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node ./lolisafe.js",
+    "start": "cross-env NODE_ENV=production node ./chibisafe.js",
     "start:reload": "cross-env NODE_ENV=production gulp watch",
-    "pm2": "cross-env NODE_ENV=production pm2 start ./lolisafe.js",
+    "pm2": "cross-env NODE_ENV=production pm2 start ./chibisafe.js",
     "lint": "gulp lint",
     "build": "gulp default",
-    "dev": "cross-env NODE_ENV=development gulp build-dev && cross-env NODE_ENV=development node ./lolisafe.js",
+    "dev": "cross-env NODE_ENV=development gulp build-dev && cross-env NODE_ENV=development node ./chibisafe.js",
     "dev:reload": "cross-env NODE_ENV=development gulp watch",
     "migrate": "node ./scripts/migrate.js",
     "bump-versions": "node ./scripts/bump-versions.js",

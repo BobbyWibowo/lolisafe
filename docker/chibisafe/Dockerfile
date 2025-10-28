@@ -1,6 +1,6 @@
 FROM node:18-bullseye
 
-WORKDIR /usr/lolisafe
+WORKDIR /usr/chibisafe
 COPY package.json yarn.lock ./
 
 RUN apt update &&\

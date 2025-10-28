@@ -37,7 +37,7 @@ node_modules/
 package-lock.json
 
 # Docker
-docker/nginx/lolisafe.tld.conf
+docker/nginx/chibisafe.tld.conf
 docker-compose.config.yml
 
 # vscode's workspace settings

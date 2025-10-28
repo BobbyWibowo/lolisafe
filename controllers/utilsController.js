@@ -573,7 +573,7 @@ self.unlinkFile = async filename => {
 }
 
 self.bulkDeleteFromDb = async (field, values = [], user, permissionBypass = false) => {
-  // NOTE: permissionBypass should not be set unless used by lolisafe's automated service.
+  // NOTE: permissionBypass should not be set unless used by chibisafe's automated service.
 
   if ((!user && !permissionBypass) || !['id', 'name'].includes(field) || !values.length) {
     return values

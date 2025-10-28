@@ -106,7 +106,7 @@ const map = {
   if (done) {
     status = `Completed ${done} database migration task(s).`
   }
-  console.log(`${status} You may now start lolisafe normally.`)
+  console.log(`${status} You may now start chibisafe normally.`)
 })()
   .then(() => process.exit(0))
   .catch(error => {

@@ -1,6 +1,6 @@
 # README
 
-`versions.json` is the file that tells Nunjucks what version strings to append to client-side lolisafe assets (only crucial if you use [Cache-Control](#cache-control)).
+`versions.json` is the file that tells Nunjucks what version strings to append to client-side chibisafe assets (only crucial if you use [Cache-Control](#cache-control)).
 
 To bump the version, it's recommended to use use `yarn bump-versions`.
 
@@ -14,7 +14,7 @@ node scripts/bump-versions.js <types>
 
 types:
 Space separated list of types (accepts 1 to 5).
-1: CSS and JS files (lolisafe core assets + fontello.css).
+1: CSS and JS files (chibisafe core assets + fontello.css).
 2: Icons, images and config files (manifest.json, browserconfig.xml, etc).
 3: CSS and JS files (libs from /public/libs, such as bulma, lazyload, etc).
 4: Renders from /public/render/* directories (to be used with /src/js/misc/render.js).

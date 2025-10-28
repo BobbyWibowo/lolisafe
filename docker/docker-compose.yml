@@ -17,10 +17,10 @@ services:
             interval: 60s
             timeout: 5s
 
-    lolisafe:
+    chibisafe:
         build:
             context: ../
-            dockerfile: ./docker/lolisafe/Dockerfile
+            dockerfile: ./docker/chibisafe/Dockerfile
         expose:
             - "9999"
         restart: unless-stopped

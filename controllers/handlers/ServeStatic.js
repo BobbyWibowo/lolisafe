@@ -2,7 +2,7 @@
  * ServeStatic is intended to be used last in middlewares/handlers hierarcy,
  * as it has to check the physical disks everytime to lookup for files.
  *
- * Hence for lolisafe, this is meant to be used solely to serve uploaded files,
+ * Hence for chibisafe, this is meant to be used solely to serve uploaded files,
  * if serving files with node.
  * Because of that, it optionally comes with Content-Type overrides,
  * and database query for Content-Disposition.
