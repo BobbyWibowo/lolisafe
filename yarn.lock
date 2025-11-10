@@ -1470,10 +1470,10 @@ chownr@^2.0.0:
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-2.0.0.tgz#15bfbe53d2eab4cf70f18a8cd68ebe5b3cb1dece"
   integrity sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==
 
-clamscan@~2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/clamscan/-/clamscan-2.1.2.tgz#ed58ef77b9095e3b28a3e7855b2c2acf6a2088ef"
-  integrity sha512-pcovgLHcrg3l/mI51Kuk0kN++07pSZdBTskISw0UFvsm8UXda8oNCm0eLeODxFg85Mz+k+TtSS9+XPlriJ8/Fg==
+clamscan@~2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/clamscan/-/clamscan-2.4.0.tgz#0abca6e5a96628151dbacc1152233d2d388ab82a"
+  integrity sha512-XBOxUiGOcQGuKmCn5qaM5rIK153fGCwsvJMbjVtcnNJ+j/YHrSj2gKNjyP65yr/E8JsKTTDtKYFG++p7Lzigyw==
 
 class-utils@^0.3.5:
   version "0.3.6"

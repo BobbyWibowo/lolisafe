@@ -39,7 +39,7 @@
     "better-sqlite3": "~9.4.3",
     "blake3": "~2.1.7",
     "chokidar": "~3.6.0",
-    "clamscan": "~2.1.2",
+    "clamscan": "~2.4.0",
     "content-disposition": "~0.5.4",
     "cross-env": "~7.0.3",
     "etag": "~1.8.1",
