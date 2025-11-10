@@ -44,7 +44,7 @@
     "cross-env": "~7.0.3",
     "etag": "~1.8.1",
     "fastq": "~1.17.1",
-    "fluent-ffmpeg": "~2.1.2",
+    "fluent-ffmpeg": "~2.1.3",
     "fresh": "~0.5.2",
     "fs-jetpack": "~5.1.0",
     "helmet": "~6.2.0",
